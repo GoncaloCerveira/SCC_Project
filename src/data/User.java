@@ -15,23 +15,22 @@ public class User {
 	private String pwd;
 	private String photoId;
 
-	private String email;
+	//private String email;
 
-	private String phoneNumber;
+	//private String phoneNumber;
 	// owned houses
 	private String[] ownedIds;
 	// rented houses
 	private String[] rentalIds;
-	public User(String id, String name, String pwd, String photoId, String email, String phoneNumber, String[] ownedIds, String[] rentalIds) {
+	public User(String id, String name, String pwd) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.pwd = pwd;
-		this.photoId = photoId;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.ownedIds = ownedIds;
-		this.rentalIds = rentalIds;
+		//this.email = email;
+		//this.phoneNumber = phoneNumber;
+		//this.ownedIds = ownedIds;
+		//this.rentalIds = rentalIds;
 
 	}
 	public String getId() {
@@ -66,15 +65,15 @@ public class User {
 				+ Arrays.toString(rentalIds) +"]";
 	}
 
-	public String getEmail() {
+	/*public String getEmail() {
 		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
+	}*/
 
-	public String getPhoneNumber() {
+	/*public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
@@ -96,5 +95,5 @@ public class User {
 
 	public void setRentalIds(String[] rentalIds) {
 		this.rentalIds = rentalIds;
-	}
+	}*/
 }

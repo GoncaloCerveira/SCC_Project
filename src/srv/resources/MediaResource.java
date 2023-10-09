@@ -6,7 +6,6 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import utils.Hash;
 /**
  * Resource for managing media files, such as images.
  */

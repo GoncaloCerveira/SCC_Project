@@ -17,15 +17,13 @@ public class UserDAO {
 	public UserDAO() {
 	}
 	public UserDAO( User u) {
-		this(u.getId(), u.getName(), u.getPwd(), u.getPhotoId(), u.getHouseIds());
+		this(u.getId(), u.getName(), u.getPwd());
 	}
-	public UserDAO(String id, String name, String pwd, String photoId, String[] houseIds) {
+	public UserDAO(String id, String name, String pwd) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.pwd = pwd;
-		this.photoId = photoId;
-		this.houseIds = houseIds;
 	}
 	public String get_rid() {
 		return _rid;
@@ -69,9 +67,9 @@ public class UserDAO {
 	public void setHouseIds(String[] houseIds) {
 		this.houseIds = houseIds;
 	}
-	public User toUser() {
+	/*public User toUser() {
 		return new User( id, name, pwd, photoId, houseIds == null ? null : Arrays.copyOf(houseIds,houseIds.length));
-	}
+	}*/
 	@Override
 	public String toString() {
 		return "UserDAO [_rid=" + _rid + ", _ts=" + _ts + ", id=" + id + ", name=" + name + ", pwd=" + pwd

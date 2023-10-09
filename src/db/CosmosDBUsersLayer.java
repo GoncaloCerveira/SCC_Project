@@ -9,14 +9,14 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.UserDAO;
 
-public class CosmosDBLayer {
+public class CosmosDBUsersLayer {
 	private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
 	private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
 	private static final String DB_NAME = "sccproject1";
 	
-	private static CosmosDBLayer instance;
+	private static CosmosDBUsersLayer instance;
 
-	public static synchronized CosmosDBLayer getInstance() {
+	public static synchronized CosmosDBUsersLayer getInstance() {
 		if( instance != null)
 			return instance;
 
@@ -30,7 +30,7 @@ public class CosmosDBLayer {
 		         .connectionSharingAcrossClientsEnabled(true)
 		         .contentResponseOnWriteEnabled(true) // on write return the object written
 		         .buildClient();
-		instance = new CosmosDBLayer( client);
+		instance = new CosmosDBUsersLayer(client);
 		return instance;
 		
 	}
@@ -39,7 +39,7 @@ public class CosmosDBLayer {
 	private CosmosDatabase db;
 	private CosmosContainer users;
 	
-	public CosmosDBLayer(CosmosClient client) {
+	public CosmosDBUsersLayer(CosmosClient client) {
 		this.client = client;
 	}
 	
