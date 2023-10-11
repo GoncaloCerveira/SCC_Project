@@ -33,6 +33,17 @@ public class User {
 		//this.rentalIds = rentalIds;
 
 	}
+	public User(String id, String name, String pwd, String[] ownedIds, String[] rentalIds) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.pwd = pwd;
+		//this.email = email;
+		//this.phoneNumber = phoneNumber;
+		this.ownedIds = ownedIds;
+		this.rentalIds = rentalIds;
+
+	}
 	public String getId() {
 		return id;
 	}
