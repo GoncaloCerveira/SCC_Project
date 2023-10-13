@@ -11,7 +11,6 @@ import java.util.Arrays;
 public class User {
 	private String id;
 	private String name;
-	// already hashed
 	private String pwd;
 	private String photoId;
 

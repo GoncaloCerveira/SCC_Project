@@ -29,7 +29,7 @@ public class MediaResource
 				.buildClient();
 		BlobClient blob = containerClient.getBlobClient(key);
 		blob.upload(BinaryData.fromBytes(contents));
-		System.out.println( "File uploaded with key " + key);
+		System.out.println( "Photo uploaded with key " + key);
 		return key;
 	}
 
@@ -126,13 +126,12 @@ public class MediaResource
 		return data.toBytes();
 	}
 
-	/**
-	 * Lists the ids of images stored.
-	 */
-	/*@GET
-	@Path("/")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> list() {
-		return new ArrayList<String>(map.keySet());
-	}*/
+	public boolean fileExists(String containerName, String id) {
+		BlobContainerClient containerClient = new BlobContainerClientBuilder()
+				.connectionString(STORAGE_CONNECTION_STRING)
+				.containerName(containerName)
+				.buildClient();
+		return containerClient.getBlobClient(id).exists();
+	}
+
 }
