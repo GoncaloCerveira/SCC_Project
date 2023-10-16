@@ -126,6 +126,14 @@ public class MediaResource
 		return data.toBytes();
 	}
 
+	public void deleteFile(String containerName, String id) {
+		BlobContainerClient containerClient = new BlobContainerClientBuilder()
+				.connectionString(STORAGE_CONNECTION_STRING)
+				.containerName(containerName)
+				.buildClient();
+		containerClient.getBlobClient(id).delete();
+	}
+
 	public boolean fileExists(String containerName, String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
 				.connectionString(STORAGE_CONNECTION_STRING)

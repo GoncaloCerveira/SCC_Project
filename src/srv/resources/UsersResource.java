@@ -1,7 +1,7 @@
 package srv.resources;
 
-import data.User;
-import data.UserDAO;
+import data.user.User;
+import data.user.UserDAO;
 import db.CosmosDBUsersLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.PathParam;
@@ -40,8 +40,11 @@ public class UsersResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        //String hashedPwd = Hash.of(user.getPwd());
-        //user.setPwd(hashedPwd);
+        if(!media.fileExists("images", user.getPhotoId())) {
+            Log.info("ID of photo does not exist");
+            throw new WebApplicationException(Response.Status.CONFLICT);
+        }
+
         db.putUser(new UserDAO(user));
         Log.info("User created.");
         return Response.ok().build();
@@ -66,7 +69,10 @@ public class UsersResource {
                 Log.info("ID of photo does not exist");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
-            else toUpdate.setPhotoId(user.getPhotoId());
+            else {
+                toUpdate.setPhotoId(user.getPhotoId());
+                media.deleteFile("images", user.getId());
+            }
         }
         if(user.getName() != null)
             toUpdate.setName(user.getName());
@@ -93,10 +99,13 @@ public class UsersResource {
 
         UserDAO toDelete = db.getUserById(id).iterator().next();
         db.delUser(toDelete);
+        media.deleteFile("images", id);
         Log.info("User deleted.");
         return Response.ok().build();
     }
 
-
+    public boolean userExists(String id) {
+    return false;
+    }
 
 }
