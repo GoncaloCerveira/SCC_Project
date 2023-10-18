@@ -1,19 +1,24 @@
-package data;
+package data.rental;
 
 public class Rental {
 
     private String id;
     private String houseId;
     private String userId;
-    private int period;
+    private int startDate;    // Para podermos verificar se uma casa está livre num certo período de tempo
+                              // Caso não seja necessário fica como estava antes
+                              // Concatenar ano + mês + dia para ser mais fácil comparar na base de dados
+    private int endDate;
+
     // total price
     private int price;
 
-    public Rental(String id, String houseId, String userId, int period, int price) {
+    public Rental(String id, String houseId, String userId, int startDate, int endDate, int price) {
         this.id = id;
         this.houseId = houseId;
         this.userId = userId;
-        this.period = period;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.price = price;
     }
 
@@ -41,12 +46,20 @@ public class Rental {
         this.userId = userId;
     }
 
-    public int getPeriod() {
-        return period;
+    public int getStartDate() {
+        return startDate;
     }
 
-    public void setPeriod(int period) {
-        this.period = period;
+    public void setStartDate(int startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(int endDate) {
+        this.endDate = endDate;
     }
 
     public int getPrice() {
