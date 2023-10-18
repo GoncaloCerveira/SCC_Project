@@ -16,12 +16,12 @@ public class Question {
         this.reply = reply;
     }
 
-    public boolean validateQuestion() {
+    public boolean validateCreate() {
         return this.userId != null && this.ownerId != null && this.question != null;
     }
 
     public boolean validateReply() {
-        return validateQuestion() & this.reply != null;
+        return validateCreate() & this.reply != null;
     }
 
     public String getHouseId() {

@@ -7,7 +7,6 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
-import data.user.UserDAO;
 
 public class CosmosDBHousesLayer {
 	private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
@@ -62,17 +61,17 @@ public class CosmosDBHousesLayer {
 		if(res.getStatusCode()<300)
 			return res;
 		else throw new NotFoundException();
-		//return users.createItem(user);
+		//return houses.createItem(house);
 	}
 	
 	public CosmosPagedIterable<HouseDAO> getHouseById( String id) {
 		init();
-		return houses.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses WHERE houses.id=\"" + id + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
-	public CosmosPagedIterable<HouseDAO> getUsers() {
+	public CosmosPagedIterable<HouseDAO> getHouses() {
 		init();
-		return houses.queryItems("SELECT * FROM users ", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses ", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
 	public void close() {

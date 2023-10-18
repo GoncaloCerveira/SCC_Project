@@ -8,6 +8,7 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
+import data.rental.Rental;
 import data.rental.RentalDAO;
 
 public class CosmosDBRentalsLayer {
@@ -77,9 +78,19 @@ public class CosmosDBRentalsLayer {
         return rentals.queryItems("SELECT * FROM rentals WHERE rentals.id=\"" + id + "\"", new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
+    public CosmosPagedIterable<RentalDAO> getHouseRentalByDate(String houseId, int startDate, int endDate) {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals WHERE rentals.houseid=\"" + houseId + "\" AND rentals.startDate <= " + endDate + " AND rentals.endDate >= " + startDate, new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
     public CosmosPagedIterable<RentalDAO> getRentals() {
         init();
         return rentals.queryItems("SELECT * FROM rentals ", new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
+    public CosmosPagedIterable<RentalDAO> getHouseRentals(String houseId) {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\"", new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
     public void close() {

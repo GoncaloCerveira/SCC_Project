@@ -9,6 +9,7 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
 import data.question.QuestionDAO;
+import data.rental.RentalDAO;
 
 // TODO
 // Modificar o id para usar o id da casa e o id do user como chave da questão
@@ -80,9 +81,19 @@ public class CosmosDBQuestionsLayer {
         return questions.queryItems("SELECT * FROM questions WHERE questions.id=\"" + id + "\"", new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
+    public CosmosPagedIterable<QuestionDAO> getQuestionByHouseAndUser(String houseId, String userId) {
+        init();
+        return questions.queryItems("SELECT * FROM questions WHERE questions.houseId=\"" + houseId + "\" AND questions.userID=\"" + userId + "\"", new CosmosQueryRequestOptions(), QuestionDAO.class);
+    }
+
     public CosmosPagedIterable<QuestionDAO> getQuestions() {
         init();
         return questions.queryItems("SELECT * FROM questions ", new CosmosQueryRequestOptions(), QuestionDAO.class);
+    }
+
+    public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String houseId) {
+        init();
+        return questions.queryItems("SELECT * FROM rentals where questions.houseid=\"" + houseId + "\"", new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
     public void close() {

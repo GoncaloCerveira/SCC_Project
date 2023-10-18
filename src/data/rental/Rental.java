@@ -22,6 +22,14 @@ public class Rental {
         this.price = price;
     }
 
+    public boolean validateCreate() {
+        return this.userId != null && this.startDate != 0 && this.endDate != 0 && this.price != 0;
+    }
+
+    public boolean validateUpdate() {
+        return validateCreate() && this.id != null;
+    }
+
     public String getId() {
         return id;
     }
