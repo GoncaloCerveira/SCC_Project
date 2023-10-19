@@ -14,6 +14,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -44,7 +45,8 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        rental.setId(id);
+
+        rental.setId(UUID.randomUUID().toString());
         rental.setHouseId(houseId);
 
         db.putRental(new RentalDAO(/*rental*/));
