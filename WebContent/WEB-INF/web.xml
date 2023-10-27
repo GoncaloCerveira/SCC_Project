@@ -3,7 +3,6 @@
   <display-name>scc-backend</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>default.html</welcome-file>
     <welcome-file>default.htm</welcome-file>
@@ -15,7 +14,7 @@
     <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
      <init-param>
         <param-name>jakarta.ws.rs.Application</param-name>
-        <param-value>scc.srv.MainApplication</param-value>
+        <param-value>srv.MainApplication</param-value>
     </init-param>
 </servlet>
 <servlet-mapping>

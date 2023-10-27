@@ -13,14 +13,9 @@ public class User {
 	private String name;
 	private String pwd;
 	private String photoId;
-
 	//private String email;
-
 	//private String phoneNumber;
-	// owned houses
 	private String[] ownedIds;
-	// rented houses
-	private String[] rentalIds;
 	public User(String id, String name, String pwd) {
 		super();
 		this.id = id;
@@ -32,17 +27,11 @@ public class User {
 		//this.rentalIds = rentalIds;
 
 	}
-	public User(String id, String name, String pwd, String[] ownedIds, String[] rentalIds) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.pwd = pwd;
-		//this.email = email;
-		//this.phoneNumber = phoneNumber;
-		this.ownedIds = ownedIds;
-		this.rentalIds = rentalIds;
 
+	public boolean validate() {
+		return this.id != null && this.pwd!=null && this.name!=null && this.photoId!=null;
 	}
+
 	public String getId() {
 		return id;
 	}
@@ -71,8 +60,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", pwd=" + pwd + ", photoId=" + photoId + ", ownedIds="
-				+ Arrays.toString(ownedIds) + ", rentalIds="
-				+ Arrays.toString(rentalIds) +"]";
+				+ Arrays.toString(ownedIds);
 	}
 
 	/*public String getEmail() {

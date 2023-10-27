@@ -3,18 +3,28 @@ package data.house;
 import java.util.Map;
 
 public class House {
+
     private String id;
-    //definir formato location
     private String location;
-
     private String ownerID;
+    private String[] photoIDs;
 
-    private byte[] photo;
-
-    public House(String id, String location, String ownerId) {
+    public House(String location, String ownerId, String[] photoIDs) {
         this.id = id;
         this.location = location;
         this.ownerID = ownerId;
+        this.photoIDs = photoIDs;
+    }
+
+    public House(String id, String location, String ownerId, String[] photoIDs) {
+        this.id = id;
+        this.location = location;
+        this.ownerID = ownerId;
+        this.photoIDs = photoIDs;
+    }
+
+    public boolean validate() {
+        return this.location!=null && this.ownerID!=null && this.photoIDs!=null;
     }
 
     public String getId() {
@@ -40,15 +50,5 @@ public class House {
     public void setOwnerID(String ownerID) {
         this.ownerID = ownerID;
     }
-
-    public byte[] getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
-    }
-
-    //private String ownerId;
 
 }

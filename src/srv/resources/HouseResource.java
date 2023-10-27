@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -23,16 +24,16 @@ import java.util.logging.Logger;
 public class HouseResource {
 
     private CosmosDBHousesLayer hdb;
-    //set
     private CosmosDBUsersLayer udb;
     private MediaResource media;
+    private AuthResource auth;
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
 
     @POST
     @Path("/")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@QueryParam("pwd") String pwd, House house, byte[] contents) {
+    public Response create(@QueryParam("pwd") String pwd, House house) {
         Log.info("createHouse of : " + house.getOwnerID());
         if(house.getId() == null || house.getOwnerID()== null || house.getLocation() == null || pwd == null) {
             Log.info("Null information was given");
@@ -60,6 +61,27 @@ public class HouseResource {
         Log.info("House added with id: "+id);
         return Response.ok().build();
     }
+
+
+    @POST
+    @Path("/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(@CookieParam("scc:session") Cookie session, House house) {
+        Log.info("createHouse of : " + house.getOwnerID());
+        try {
+            //check correction of house
+            auth.checkCookie(session, house.getOwnerID());
+            //create house
+            return Response.ok().build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+
 
     @PATCH
     @Path("/{id}")
