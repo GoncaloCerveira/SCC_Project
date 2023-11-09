@@ -23,7 +23,10 @@ public class CosmosDBUsersLayer {
 
 		CosmosClient client = createClient();
 		instance = new CosmosDBUsersLayer(client);
+
+		db = client.getDatabase(DB_NAME);
 		db.createContainerIfNotExists("users", "user_id");
+
 		return instance;
 		
 	}
