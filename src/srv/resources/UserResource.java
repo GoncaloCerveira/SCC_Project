@@ -2,18 +2,14 @@ package srv.resources;
 
 import data.user.User;
 import data.user.UserDAO;
+
 import db.CosmosDBUsersLayer;
+
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
 import java.util.logging.Logger;
 
 @Path("/user")

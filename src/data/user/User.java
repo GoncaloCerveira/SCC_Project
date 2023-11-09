@@ -16,6 +16,10 @@ public class User {
 	//private String email;
 	//private String phoneNumber;
 	private String[] ownedIds;
+
+	public User() {
+	}
+
 	public User(String id, String name, String pwd) {
 		super();
 		this.id = id;

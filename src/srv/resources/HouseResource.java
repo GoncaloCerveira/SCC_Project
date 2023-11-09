@@ -1,23 +1,17 @@
 package srv.resources;
 
 import data.house.House;
-import data.user.UserDAO;
 import data.house.HouseDAO;
+
 import db.CosmosDBHousesLayer;
 import db.CosmosDBUsersLayer;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Path("/house")

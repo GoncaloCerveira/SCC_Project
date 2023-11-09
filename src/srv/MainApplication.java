@@ -1,8 +1,7 @@
 package srv;
 
 import jakarta.ws.rs.core.Application;
-import srv.resources.ControlResource;
-import srv.resources.MediaResource;
+import srv.resources.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +13,10 @@ public class MainApplication extends Application
 
 	public MainApplication() {
 		resources.add(ControlResource.class);
+		resources.add(HouseResource.class);
+		resources.add(QuestionResource.class);
+		resources.add(RentalResource.class);
+		resources.add(UserResource.class);
 		singletons.add( new MediaResource());
 	}
 
