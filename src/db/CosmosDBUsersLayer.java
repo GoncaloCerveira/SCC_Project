@@ -13,8 +13,13 @@ import static db.DBClient.*;
 
 public class CosmosDBUsersLayer {
 	private static CosmosDBUsersLayer instance;
+	private CosmosClient client;
+	private static CosmosDatabase db;
+	private CosmosContainer users;
 
 	public static synchronized CosmosDBUsersLayer getInstance() {
+		db.createContainerIfNotExists("users", "user_id");
+
 		if( instance != null)
 			return instance;
 
@@ -24,10 +29,6 @@ public class CosmosDBUsersLayer {
 		
 	}
 	
-	private CosmosClient client;
-	private CosmosDatabase db;
-	private CosmosContainer users;
-	
 	public CosmosDBUsersLayer(CosmosClient client) {
 		this.client = client;
 	}
@@ -36,7 +37,6 @@ public class CosmosDBUsersLayer {
 		if( db != null)
 			return;
 		db = client.getDatabase(DB_NAME);
-		db.createContainerIfNotExists("users", "user_id");
 		users = db.getContainer("users");
 		
 	}

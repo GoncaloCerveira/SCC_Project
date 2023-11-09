@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Path("/user")
 public class UserResource {
 
-    private CosmosDBUsersLayer db;
+    private CosmosDBUsersLayer db = CosmosDBUsersLayer.getInstance();
     private MediaResource media;
     //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
