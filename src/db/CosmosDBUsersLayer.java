@@ -18,13 +18,12 @@ public class CosmosDBUsersLayer {
 	private CosmosContainer users;
 
 	public static synchronized CosmosDBUsersLayer getInstance() {
-		db.createContainerIfNotExists("users", "user_id");
-
 		if( instance != null)
 			return instance;
 
 		CosmosClient client = createClient();
 		instance = new CosmosDBUsersLayer(client);
+		db.createContainerIfNotExists("users", "user_id");
 		return instance;
 		
 	}
