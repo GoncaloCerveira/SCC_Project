@@ -8,8 +8,9 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
-import data.rental.Rental;
 import data.rental.RentalDAO;
+
+import static db.DBClient.*;
 
 public class CosmosDBRentalsLayer {
     private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
@@ -22,16 +23,7 @@ public class CosmosDBRentalsLayer {
         if( instance != null)
             return instance;
 
-        CosmosClient client = new CosmosClientBuilder()
-                .endpoint(CONNECTION_URL)
-                .key(DB_KEY)
-                //.directMode() comment this if not to use direct mode
-                .gatewayMode()
-                // replace by .directMode() for better performance
-                .consistencyLevel(ConsistencyLevel.SESSION)
-                .connectionSharingAcrossClientsEnabled(true)
-                .contentResponseOnWriteEnabled(true) // on write return the object written
-                .buildClient();
+        CosmosClient client = createClient();
         instance = new CosmosDBRentalsLayer(client);
         return instance;
 
@@ -49,6 +41,7 @@ public class CosmosDBRentalsLayer {
         if( db != null)
             return;
         db = client.getDatabase(DB_NAME);
+        db.createContainerIfNotExists("rentals", "rental_id");
         rentals = db.getContainer("rentals");
 
     }

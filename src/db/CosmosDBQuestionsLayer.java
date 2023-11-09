@@ -9,32 +9,20 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
 import data.question.QuestionDAO;
-import data.rental.RentalDAO;
+
+import static db.DBClient.*;
 
 // TODO
 // Modificar o id para usar o id da casa e o id do user como chave da questão
 
 public class CosmosDBQuestionsLayer {
-    private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
-    private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
-    private static final String DB_NAME = "sccproject1";
-
     private static CosmosDBQuestionsLayer instance;
 
     public static synchronized CosmosDBQuestionsLayer getInstance() {
         if( instance != null)
             return instance;
 
-        CosmosClient client = new CosmosClientBuilder()
-                .endpoint(CONNECTION_URL)
-                .key(DB_KEY)
-                //.directMode() comment this if not to use direct mode
-                .gatewayMode()
-                // replace by .directMode() for better performance
-                .consistencyLevel(ConsistencyLevel.SESSION)
-                .connectionSharingAcrossClientsEnabled(true)
-                .contentResponseOnWriteEnabled(true) // on write return the object written
-                .buildClient();
+        CosmosClient client = createClient();
         instance = new CosmosDBQuestionsLayer(client);
         return instance;
 
@@ -52,6 +40,7 @@ public class CosmosDBQuestionsLayer {
         if( db != null)
             return;
         db = client.getDatabase(DB_NAME);
+        db.createContainerIfNotExists("questions", "question_id");
         questions = db.getContainer("questions");
 
     }
