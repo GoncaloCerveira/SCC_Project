@@ -11,9 +11,9 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import java.util.logging.Logger;
 
 @Path("/user")
@@ -21,7 +21,7 @@ public class UserResource {
 
     private CosmosDBUsersLayer db;
     private MediaResource media;
-    private AuthResource auth;
+    //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
@@ -58,7 +58,7 @@ public class UserResource {
     public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, User user) {
         Log.info("updateUser : " + id);
         try {
-            auth.checkCookie(session, id);
+            //auth.checkCookie(session, id);
 
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
@@ -99,7 +99,7 @@ public class UserResource {
     public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
         Log.info("deleteUser : " + id);
         try {
-            auth.checkCookie(session, id);
+            //auth.checkCookie(session, id);
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
                 Log.info("User does not exist.");

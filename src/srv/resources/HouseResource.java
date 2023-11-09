@@ -26,7 +26,7 @@ public class HouseResource {
     private CosmosDBHousesLayer hdb;
     private CosmosDBUsersLayer udb;
     private MediaResource media;
-    private AuthResource auth;
+    //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
 
     @POST
@@ -56,7 +56,7 @@ public class HouseResource {
         hdb.putHouse(new HouseDAO(house));
 
         String mediaId = id+"#"+System.currentTimeMillis();
-        media.uploadImage(mediaId, contents);
+        //media.uploadImage(mediaId, contents);
 
         Log.info("House added with id: "+id);
         return Response.ok().build();
@@ -71,7 +71,7 @@ public class HouseResource {
         Log.info("createHouse of : " + house.getOwnerID());
         try {
             //check correction of house
-            auth.checkCookie(session, house.getOwnerID());
+            //auth.checkCookie(session, house.getOwnerID());
             //create house
             return Response.ok().build();
         } catch (WebApplicationException e) {
@@ -110,9 +110,9 @@ public class HouseResource {
         }
 
         HouseDAO toUpdate = hdb.getHouseById(id).iterator().next();
-        if(house.getPhoto() != null) {
+        //if(house.getPhoto() != null) {
             //atualizar photo
-        }
+        //}
         if(house.getOwnerID() != null)
             house.setOwnerID(house.getOwnerID());
         if(house.getLocation() != null)
