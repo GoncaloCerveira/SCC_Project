@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Path("/user")
 public class UserResource {
 
-    private CosmosDBUsersLayer db = CosmosDBUsersLayer.getInstance();
+    private final CosmosDBUsersLayer db = CosmosDBUsersLayer.getInstance();
     private MediaResource media;
     //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
@@ -89,29 +89,17 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
-        Log.info("deleteUser : " + id);
-        try {
-            //auth.checkCookie(session, id);
+    public Response delete(@PathParam("id") String id) {
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
-                Log.info("User does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
             UserDAO toDelete = results.next();
             db.delUser(toDelete);
-            media.deleteFile("images", id);
-            Log.info("User deleted.");
-            //apagar a sessão deste utilizador
             return Response.ok().build();
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new InternalServerErrorException(e);
-        }
     }
 
 }
