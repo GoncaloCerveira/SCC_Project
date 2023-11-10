@@ -7,7 +7,6 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
-import data.house.HouseDAO;
 import data.user.UserDAO;
 
 import static db.DBClient.*;

@@ -44,7 +44,7 @@ public class RentalResource {
         rental.setId(UUID.randomUUID().toString());
         rental.setHouseId(houseId);
 
-        db.putRental(new RentalDAO(/*rental*/));
+        db.putRental(new RentalDAO(rental));
         Log.info("Rental created.");
         return Response.ok().build();
     }
@@ -67,7 +67,7 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        db.putRental(new RentalDAO(/*rental*/));
+        db.putRental(new RentalDAO(rental));
         Log.info("Rental updated.");
         return Response.ok().build();
     }
