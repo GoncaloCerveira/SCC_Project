@@ -42,7 +42,6 @@ public class CosmosDBQuestionsLayer {
         if( db != null)
             return;
         db = client.getDatabase(DB_NAME);
-        db.createContainerIfNotExists("questions", "question_id");
         questions = db.getContainer("questions");
 
     }

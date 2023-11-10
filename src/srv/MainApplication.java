@@ -6,12 +6,15 @@ import srv.resources.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import db.DBClient;
+
 public class MainApplication extends Application
 {
 	private Set<Object> singletons = new HashSet<Object>();
 	private Set<Class<?>> resources = new HashSet<Class<?>>();
 
 	public MainApplication() {
+		DBClient.createContainersIfNotExist();
 		resources.add(ControlResource.class);
 		resources.add(HouseResource.class);
 		resources.add(QuestionResource.class);

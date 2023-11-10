@@ -42,7 +42,6 @@ public class CosmosDBRentalsLayer {
         if( db != null)
             return;
         db = client.getDatabase(DB_NAME);
-        db.createContainerIfNotExists("rentals", "rental_id");
         rentals = db.getContainer("rentals");
 
     }

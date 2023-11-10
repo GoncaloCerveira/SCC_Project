@@ -3,6 +3,7 @@ package db;
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosDatabase;
 
 public class DBClient {
     private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
@@ -22,6 +23,16 @@ public class DBClient {
                 .connectionSharingAcrossClientsEnabled(true)
                 .contentResponseOnWriteEnabled(true) // on write return the object written
                 .buildClient();
+    }
+
+    public static void createContainersIfNotExist() {
+        CosmosClient client = createClient();
+        CosmosDatabase db = client.getDatabase(DB_NAME);
+
+        db.createContainerIfNotExists("houses", "/id");
+        db.createContainerIfNotExists("questions", "/id");
+        db.createContainerIfNotExists("rentals", "/id");
+        db.createContainerIfNotExists("users", "/id");
     }
 
 }
