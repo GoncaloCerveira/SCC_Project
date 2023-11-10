@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 @Path("/house")
 public class HouseResource {
 
-    private CosmosDBHousesLayer hdb;
-    private CosmosDBUsersLayer udb;
+    private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
+    private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
     private MediaResource media;
     //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
@@ -27,9 +27,9 @@ public class HouseResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@QueryParam("pwd") String pwd, House house) {
+    public Response create(House house) {
         Log.info("createHouse of : " + house.getOwnerID());
-        if(house.getId() == null || house.getOwnerID()== null || house.getLocation() == null || pwd == null) {
+        if(house.getId() == null || house.getOwnerID()== null || house.getLocation() == null) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -38,11 +38,6 @@ public class HouseResource {
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        if(!pwd.equals(udb.getUserById(house.getOwnerID()).iterator().next().getPwd())) {
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
         String id = UUID.randomUUID().toString();
@@ -58,7 +53,7 @@ public class HouseResource {
 
 
     @POST
-    @Path("/")
+    @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, House house) {
@@ -78,15 +73,12 @@ public class HouseResource {
 
 
     @PATCH
-    @Path("/{id}")
+    @Path("/{id}/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, String pwd, House house) {
+    public Response update(@PathParam("id") String id, House house) {
         Log.info("updateHouse : " + id);
-        if(pwd == null) {
-            Log.info("Null information was given.");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
+
         if(house.getId() != null) {
             if(!house.getId().equals(id))
                 Log.info("House ID cannot be modified.");
@@ -96,11 +88,6 @@ public class HouseResource {
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
-        }
-
-        if(!pwd.equals(udb.getUserById(house.getOwnerID()).iterator().next().getPwd())) {
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
         HouseDAO toUpdate = hdb.getHouseById(id).iterator().next();
@@ -119,15 +106,11 @@ public class HouseResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("id") String id, String pwd) {
+    public Response delete(@PathParam("id") String id) {
         Log.info("deleteHouse: " + id);
-        if(pwd == null) {
-            Log.info("Null information was given.");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
 
         boolean exists = hdb.getHouseById(id).iterator().hasNext();
         if(!exists) {
@@ -136,12 +119,8 @@ public class HouseResource {
         }
 
         HouseDAO house = hdb.getHouseById(id).iterator().next();
-        if(!pwd.equals(udb.getUserById(house.getOwnerID()).iterator().next().getPwd())) {
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-        }
 
-        hdb.delHouseById(id);
+        hdb.delHouse(house);
         //apagar media desta casa
         //apagar do utilizador e dos rentals
 

@@ -17,15 +17,16 @@ import java.util.logging.Logger;
 @Path("/house/{id}/question")
 public class QuestionResource {
 
-    private CosmosDBQuestionsLayer db;
+    private final CosmosDBQuestionsLayer db = CosmosDBQuestionsLayer.getInstance();
     private static final Logger Log = Logger.getLogger(QuestionResource.class.getName());
 
     @POST
-    @javax.ws.rs.Path("/create")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@PathParam("id") String houseId, Question question) {
         Log.info("createQuestion from: " + question.getUserId() + " for: " + houseId);
+
         if(!question.validateCreate()) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -46,11 +47,12 @@ public class QuestionResource {
     }
 
     @PATCH
-    @javax.ws.rs.Path("/reply")
+    @Path("/reply")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response reply(@PathParam("id") String houseId, Question question) {
         Log.info("replyQuestion from: " + question.getUserId() + " for: " + houseId);
+
         if(!question.validateReply()) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -71,11 +73,12 @@ public class QuestionResource {
     }
 
     @GET
-    @javax.ws.rs.Path("/list")
+    @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@PathParam("id") String houseId) {
         Log.info("listQuestions for: " + houseId);
+
         if(houseId == null) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

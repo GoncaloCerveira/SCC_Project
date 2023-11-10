@@ -7,6 +7,7 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
+import data.user.UserDAO;
 
 import static db.DBClient.*;
 
@@ -43,6 +44,11 @@ public class CosmosDBHousesLayer {
 	public CosmosItemResponse<Object> delHouseById(String id) {
 		init();
 		return houses.deleteItem(id, new CosmosItemRequestOptions());
+	}
+
+	public CosmosItemResponse<Object> delHouse(HouseDAO house) {
+		init();
+		return houses.deleteItem(house, new CosmosItemRequestOptions());
 	}
 	
 	public CosmosItemResponse<HouseDAO> putHouse(HouseDAO house) {
