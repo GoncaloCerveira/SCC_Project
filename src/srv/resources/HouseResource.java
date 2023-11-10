@@ -42,7 +42,7 @@ public class HouseResource {
 
         String id = UUID.randomUUID().toString();
         house.setId(id);
-        hdb.putHouse(new HouseDAO(house));
+        hdb.postHouse(new HouseDAO(house));
 
         String mediaId = id+"#"+System.currentTimeMillis();
         //media.uploadImage(mediaId, contents);

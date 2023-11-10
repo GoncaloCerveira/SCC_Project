@@ -7,6 +7,8 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import data.house.HouseDAO;
+import data.question.QuestionDAO;
 import data.user.UserDAO;
 
 import static db.DBClient.*;
@@ -49,6 +51,15 @@ public class CosmosDBUsersLayer {
 	public CosmosItemResponse<Object> delUser(UserDAO user) {
 		init();
 		return users.deleteItem(user, new CosmosItemRequestOptions());
+	}
+
+	public CosmosItemResponse<UserDAO> postUser(UserDAO user) {
+		init();
+		CosmosItemResponse<UserDAO> res = users.createItem(user);
+		if(res.getStatusCode()<300)
+			return res;
+		else throw new NotFoundException();
+		//return rentals.createItem(rentals);
 	}
 
 	public CosmosItemResponse<UserDAO> putUser(UserDAO user) {

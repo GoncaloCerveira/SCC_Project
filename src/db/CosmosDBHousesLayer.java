@@ -51,6 +51,15 @@ public class CosmosDBHousesLayer {
 		init();
 		return houses.deleteItem(house, new CosmosItemRequestOptions());
 	}
+
+	public CosmosItemResponse<HouseDAO> postHouse(HouseDAO house) {
+		init();
+		CosmosItemResponse<HouseDAO> res = houses.createItem(house);
+		if(res.getStatusCode()<300)
+			return res;
+		else throw new NotFoundException();
+		//return rentals.createItem(rentals);
+	}
 	
 	public CosmosItemResponse<HouseDAO> putHouse(HouseDAO house) {
 		init();

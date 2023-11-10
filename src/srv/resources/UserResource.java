@@ -6,7 +6,6 @@ import data.user.UserDAO;
 import db.CosmosDBUsersLayer;
 
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -15,7 +14,7 @@ import java.util.logging.Logger;
 @Path("/user")
 public class UserResource {
 
-    private final CosmosDBUsersLayer db = CosmosDBUsersLayer.getInstance();
+    private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
     private MediaResource media;
     //private AuthResource auth;
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
@@ -31,7 +30,7 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = db.getUserById(user.getId()).iterator().hasNext();
+        boolean exists = udb.getUserById(user.getId()).iterator().hasNext();
         if(exists) {
             Log.info("User already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -42,7 +41,7 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }*/
 
-        db.putUser(new UserDAO(user));
+        udb.postUser(new UserDAO(user));
         Log.info("User created.");
         return Response.ok().build();
     }
@@ -56,7 +55,7 @@ public class UserResource {
         try {
             //auth.checkCookie(session, id);
 
-            var results = db.getUserById(id).iterator();
+            var results = udb.getUserById(id).iterator();
             if(!results.hasNext()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
@@ -77,7 +76,7 @@ public class UserResource {
             if(user.getPwd() != null)
                 //toUpdate.setPwd(Hash.of(pwd));
                 toUpdate.setPwd(user.getPwd());
-            db.putUser(toUpdate);
+            udb.putUser(toUpdate);
             Log.info("User updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
@@ -92,12 +91,12 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("id") String id) {
-        var results = db.getUserById(id).iterator();
+        var results = udb.getUserById(id).iterator();
         if(!results.hasNext()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         UserDAO toDelete = results.next();
-        db.delUser(toDelete);
+        udb.delUser(toDelete);
         return Response.ok().build();
     }
 

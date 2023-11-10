@@ -13,6 +13,8 @@ public class Rental {
     // total price
     private int price;
 
+    public Rental() {}
+
     public Rental(String id, String houseId, String userId, int startDate, int endDate, int price) {
         this.id = id;
         this.houseId = houseId;

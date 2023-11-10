@@ -8,7 +8,9 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
+import data.house.HouseDAO;
 import data.question.QuestionDAO;
+import data.rental.RentalDAO;
 
 import static db.DBClient.*;
 
@@ -56,9 +58,18 @@ public class CosmosDBQuestionsLayer {
         return questions.deleteItem(question, new CosmosItemRequestOptions());
     }
 
-    public CosmosItemResponse<QuestionDAO> putQuestion(QuestionDAO question) {
+    public CosmosItemResponse<QuestionDAO> postQuestion(QuestionDAO question) {
         init();
         CosmosItemResponse<QuestionDAO> res = questions.createItem(question);
+        if(res.getStatusCode()<300)
+            return res;
+        else throw new NotFoundException();
+        //return rentals.createItem(rentals);
+    }
+
+    public CosmosItemResponse<QuestionDAO> putQuestion(QuestionDAO question) {
+        init();
+        CosmosItemResponse<QuestionDAO> res = questions.replaceItem(question, question.getId(), new PartitionKey(question.getId()), new CosmosItemRequestOptions());
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();

@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @Path("/house/{id}/question")
 public class QuestionResource {
 
-    private final CosmosDBQuestionsLayer db = CosmosDBQuestionsLayer.getInstance();
+    private final CosmosDBQuestionsLayer qdb = CosmosDBQuestionsLayer.getInstance();
     private static final Logger Log = Logger.getLogger(QuestionResource.class.getName());
 
     @POST
@@ -33,15 +33,13 @@ public class QuestionResource {
         }
 
         String userId = question.getUserId();
-        boolean exists = db.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
+        boolean exists = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
         if(exists) {
             Log.info("Question already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        question.setHouseId(houseId);
-
-        db.putQuestion(new QuestionDAO(/*question*/));
+        qdb.postQuestion(new QuestionDAO(question));
         Log.info("Question created.");
         return Response.ok().build();
     }
@@ -59,15 +57,16 @@ public class QuestionResource {
         }
 
         String userId = question.getUserId();
-        boolean exists = db.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
+        boolean exists = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
         if(!exists) {
             Log.info("Question does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        question.setHouseId(houseId);
+        QuestionDAO toUpdate = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().next();
+        toUpdate.setReply(question.getReply());
 
-        db.putQuestion(new QuestionDAO(/*question*/));
+        qdb.putQuestion(new QuestionDAO(toUpdate));
         Log.info("Question replied.");
         return Response.ok().build();
     }
@@ -84,7 +83,7 @@ public class QuestionResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        Iterator<QuestionDAO> questions = db.getHouseQuestions(houseId).iterator();
+        Iterator<QuestionDAO> questions = qdb.getHouseQuestions(houseId).iterator();
         if(!questions.hasNext()) {
             Log.info("House does not exist or has no questions.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);

@@ -15,7 +15,6 @@ public class User {
 	private String photoId;
 	//private String email;
 	//private String phoneNumber;
-	private String[] ownedIds;
 
 	public User() {
 	}
@@ -27,9 +26,6 @@ public class User {
 		this.pwd = pwd;
 		//this.email = email;
 		//this.phoneNumber = phoneNumber;
-		//this.ownedIds = ownedIds;
-		//this.rentalIds = rentalIds;
-
 	}
 
 	public boolean validate() {
@@ -61,12 +57,6 @@ public class User {
 		this.photoId = photoId;
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", pwd=" + pwd + ", photoId=" + photoId + ", ownedIds="
-				+ Arrays.toString(ownedIds);
-	}
-
 	/*public String getEmail() {
 		return email;
 	}
@@ -81,21 +71,5 @@ public class User {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-
-	public String[] getOwnedIds() {
-		return ownedIds;
-	}
-
-	public void setOwnedIds(String[] ownedIds) {
-		this.ownedIds = ownedIds;
-	}
-
-	public String[] getRentalIds() {
-		return rentalIds;
-	}
-
-	public void setRentalIds(String[] rentalIds) {
-		this.rentalIds = rentalIds;
-	}*/
+	} */
 }

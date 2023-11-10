@@ -18,11 +18,11 @@ import java.util.logging.Logger;
 @Path("/house/{id}/rental")
 public class RentalResource {
 
-    private CosmosDBRentalsLayer db;
+    private final CosmosDBRentalsLayer rdb = CosmosDBRentalsLayer.getInstance();
     private static final Logger Log = Logger.getLogger(RentalResource.class.getName());
 
     @POST
-    @javax.ws.rs.Path("/create")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@PathParam("id") String houseId, Rental rental) {
@@ -34,7 +34,7 @@ public class RentalResource {
 
         int startDate = rental.getStartDate();
         int endDate = rental.getEndDate();
-        boolean exists = db.getHouseRentalByDate(houseId, startDate, endDate).iterator().hasNext();
+        boolean exists = rdb.getHouseRentalByDate(houseId, startDate, endDate).iterator().hasNext();
         if(exists) {
             Log.info("House is already rented.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -44,13 +44,13 @@ public class RentalResource {
         rental.setId(UUID.randomUUID().toString());
         rental.setHouseId(houseId);
 
-        db.putRental(new RentalDAO(rental));
+        rdb.postRental(new RentalDAO(rental));
         Log.info("Rental created.");
         return Response.ok().build();
     }
 
     @PATCH
-    @javax.ws.rs.Path("/update")
+    @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@PathParam("id") String houseId, Rental rental) {
@@ -61,19 +61,19 @@ public class RentalResource {
         }
 
         String id = rental.getId();
-        boolean exists = db.getRentalById(id).iterator().hasNext();
+        boolean exists = rdb.getRentalById(id).iterator().hasNext();
         if(!exists) {
             Log.info("Rental does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        db.putRental(new RentalDAO(rental));
+        rdb.putRental(new RentalDAO(rental));
         Log.info("Rental updated.");
         return Response.ok().build();
     }
 
     @GET
-    @javax.ws.rs.Path("/list")
+    @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@PathParam("id") String houseId, Rental rental) {
@@ -83,7 +83,7 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        Iterator<RentalDAO> rentals = db.getHouseRentals(houseId).iterator();
+        Iterator<RentalDAO> rentals = rdb.getHouseRentals(houseId).iterator();
         if(!rentals.hasNext()) {
             Log.info("House does not exist or has no rentals.");
             throw new WebApplicationException(Response.Status.CONFLICT);

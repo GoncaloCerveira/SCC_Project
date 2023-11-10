@@ -1,79 +1,38 @@
 package data.user;
 
-import java.util.Arrays;
+import data.ObjectDAO;
 
 /**
  * Represents a User, as stored in the database
  */
-public class UserDAO {
+public class UserDAO extends User implements ObjectDAO {
 	private String _rid; // added by CosmosDB, which is the id of item
 	private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
-	private String id;
-	private String name;
-	private String pwd;
-	private String photoId;
-	private String[] houseIds;
 
-	public UserDAO() {
+	public UserDAO() {}
+
+	public UserDAO(User u) {
+		super(u.getId(), u.getName(), u.getPwd());
 	}
-	public UserDAO( User u) {
-		this(u.getId(), u.getName(), u.getPwd());
-	}
-	public UserDAO(String id, String name, String pwd) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.pwd = pwd;
-	}
+
+	@Override
 	public String get_rid() {
 		return _rid;
 	}
+
+	@Override
 	public void set_rid(String _rid) {
 		this._rid = _rid;
 	}
+
+	@Override
 	public String get_ts() {
 		return _ts;
 	}
+
+	@Override
 	public void set_ts(String _ts) {
 		this._ts = _ts;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getPwd() {
-		return pwd;
-	}
-	public void setPwd(String pwd) {
-		this.pwd = pwd;
-	}
-	public String getPhotoId() {
-		return photoId;
-	}
-	public void setPhotoId(String photoId) {
-		this.photoId = photoId;
-	}
-	public String[] getHouseIds() {
-		return houseIds == null ? new String[0] : houseIds ;
-	}
-	public void setHouseIds(String[] houseIds) {
-		this.houseIds = houseIds;
-	}
-	/*public User toUser() {
-		return new User( id, name, pwd, photoId, houseIds == null ? null : Arrays.copyOf(houseIds,houseIds.length));
-	}*/
-	@Override
-	public String toString() {
-		return "UserDAO [_rid=" + _rid + ", _ts=" + _ts + ", id=" + id + ", name=" + name + ", pwd=" + pwd
-				+ ", photoId=" + photoId + ", houseIds=" + Arrays.toString(houseIds) + "]";
 	}
 
 }

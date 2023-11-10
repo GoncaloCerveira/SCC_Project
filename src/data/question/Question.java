@@ -1,6 +1,7 @@
 package data.question;
 
 public class Question {
+    private String id;
     private String houseId;
     private String userId;
     private String ownerId; // Facilita a pesquisa de questões que um user recebeu sem ser necessário
@@ -8,7 +9,10 @@ public class Question {
     private String question;
     private String reply;
 
-    public Question(String houseId, String userId, String ownerId, String question, String reply) {
+    public Question() {}
+
+    public Question(String id, String houseId, String userId, String ownerId, String question, String reply) {
+        this.id = id;
         this.houseId = houseId;
         this.userId = userId;
         this.ownerId = ownerId;
@@ -22,6 +26,14 @@ public class Question {
 
     public boolean validateReply() {
         return validateCreate() & this.reply != null;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getHouseId() {

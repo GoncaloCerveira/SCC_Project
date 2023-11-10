@@ -2,18 +2,17 @@ package data.house;
 
 import java.util.Map;
 
-public class House {
+public abstract class House {
 
     private String id;
     private String location;
     private String ownerID;
     private String[] photoIDs;
 
-    public House(String location, String ownerId, String[] photoIDs) {
+    public House(String id, String location, String ownerId) {
         this.id = id;
         this.location = location;
         this.ownerID = ownerId;
-        this.photoIDs = photoIDs;
     }
 
     public House(String id, String location, String ownerId, String[] photoIDs) {
