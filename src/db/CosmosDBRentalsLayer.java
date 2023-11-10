@@ -8,23 +8,16 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
-import data.question.QuestionDAO;
 import data.rental.RentalDAO;
 
-import static db.DBClient.*;
-
 public class CosmosDBRentalsLayer {
-    private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
-    private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
-    private static final String DB_NAME = "sccproject1";
-
     private static CosmosDBRentalsLayer instance;
 
     public static synchronized CosmosDBRentalsLayer getInstance() {
         if( instance != null)
             return instance;
 
-        CosmosClient client = createClient();
+        CosmosClient client = CosmosDB.createClient();
         instance = new CosmosDBRentalsLayer(client);
         return instance;
 
@@ -41,7 +34,7 @@ public class CosmosDBRentalsLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(DB_NAME);
+        db = client.getDatabase(CosmosDB.DB_NAME);
         rentals = db.getContainer("rentals");
 
     }

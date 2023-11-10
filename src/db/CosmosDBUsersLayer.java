@@ -7,11 +7,7 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
-import data.house.HouseDAO;
-import data.question.QuestionDAO;
 import data.user.UserDAO;
-
-import static db.DBClient.*;
 
 public class CosmosDBUsersLayer {
 	private static CosmosDBUsersLayer instance;
@@ -23,7 +19,7 @@ public class CosmosDBUsersLayer {
 		if( instance != null)
 			return instance;
 
-		CosmosClient client = createClient();
+		CosmosClient client = CosmosDB.createClient();
 		instance = new CosmosDBUsersLayer(client);
 
 		return instance;
@@ -37,7 +33,7 @@ public class CosmosDBUsersLayer {
 	private synchronized void init() {
 		if( db != null)
 			return;
-		db = client.getDatabase(DB_NAME);
+		db = client.getDatabase(CosmosDB.DB_NAME);
 		users = db.getContainer("users");
 
 	}

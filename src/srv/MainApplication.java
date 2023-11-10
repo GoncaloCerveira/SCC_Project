@@ -6,7 +6,7 @@ import srv.resources.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import db.DBClient;
+import db.CosmosDB;
 
 public class MainApplication extends Application
 {
@@ -14,7 +14,7 @@ public class MainApplication extends Application
 	private Set<Class<?>> resources = new HashSet<Class<?>>();
 
 	public MainApplication() {
-		DBClient.createContainersIfNotExist();
+		CosmosDB.createContainersIfNotExist();
 		resources.add(ControlResource.class);
 		resources.add(HouseResource.class);
 		resources.add(QuestionResource.class);

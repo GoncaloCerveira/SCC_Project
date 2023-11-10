@@ -2,7 +2,7 @@ package data.house;
 
 import java.util.Map;
 
-public abstract class House {
+public class House {
 
     private String id;
     private String location;

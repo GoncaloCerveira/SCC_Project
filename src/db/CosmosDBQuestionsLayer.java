@@ -8,11 +8,7 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
-import data.house.HouseDAO;
 import data.question.QuestionDAO;
-import data.rental.RentalDAO;
-
-import static db.DBClient.*;
 
 // TODO
 // Modificar o id para usar o id da casa e o id do user como chave da questão
@@ -24,7 +20,7 @@ public class CosmosDBQuestionsLayer {
         if( instance != null)
             return instance;
 
-        CosmosClient client = createClient();
+        CosmosClient client = CosmosDB.createClient();
         instance = new CosmosDBQuestionsLayer(client);
         return instance;
 
@@ -41,7 +37,7 @@ public class CosmosDBQuestionsLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(DB_NAME);
+        db = client.getDatabase(CosmosDB.DB_NAME);
         questions = db.getContainer("questions");
 
     }
