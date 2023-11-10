@@ -2,22 +2,26 @@ package srv.resources;
 
 import data.user.User;
 import data.user.UserDAO;
-
 import db.CosmosDBUsersLayer;
-
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import java.util.logging.Logger;
 
 @Path("/user")
 public class UserResource {
 
-    private CosmosDBUsersLayer db = CosmosDBUsersLayer.getInstance();
+    private CosmosDBUsersLayer db;
     private MediaResource media;
-    //private AuthResource auth;
+    private AuthResource auth;
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
@@ -54,7 +58,7 @@ public class UserResource {
     public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, User user) {
         Log.info("updateUser : " + id);
         try {
-            //auth.checkCookie(session, id);
+            auth.checkCookie(session, id);
 
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
@@ -75,9 +79,11 @@ public class UserResource {
             }
             if(user.getName() != null)
                 toUpdate.setName(user.getName());
-            if(user.getPwd() != null)
+            if(user.getPwd() != null) {
                 //toUpdate.setPwd(Hash.of(pwd));
                 toUpdate.setPwd(user.getPwd());
+                //apagar sessão deste utilizador
+            }
             db.putUser(toUpdate);
             Log.info("User updated.");
             return Response.ok().build();
@@ -95,7 +101,7 @@ public class UserResource {
     public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
         Log.info("deleteUser : " + id);
         try {
-            //auth.checkCookie(session, id);
+            auth.checkCookie(session, id);
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
                 Log.info("User does not exist.");

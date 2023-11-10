@@ -3,12 +3,17 @@ package srv.resources;
 import data.question.Question;
 import data.question.QuestionDAO;
 import db.CosmosDBQuestionsLayer;
-
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**

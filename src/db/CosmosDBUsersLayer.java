@@ -9,27 +9,35 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.user.UserDAO;
 
-import static db.DBClient.*;
-
 public class CosmosDBUsersLayer {
+	private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
+	private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
+	private static final String DB_NAME = "sccproject1";
+	
 	private static CosmosDBUsersLayer instance;
-	private CosmosClient client;
-	private static CosmosDatabase db;
-	private CosmosContainer users;
 
 	public static synchronized CosmosDBUsersLayer getInstance() {
 		if( instance != null)
 			return instance;
 
-		CosmosClient client = createClient();
+		CosmosClient client = new CosmosClientBuilder()
+		         .endpoint(CONNECTION_URL)
+		         .key(DB_KEY)
+		         //.directMode() comment this if not to use direct mode
+		         .gatewayMode()		
+		         // replace by .directMode() for better performance
+		         .consistencyLevel(ConsistencyLevel.SESSION)
+		         .connectionSharingAcrossClientsEnabled(true)
+		         .contentResponseOnWriteEnabled(true) // on write return the object written
+		         .buildClient();
 		instance = new CosmosDBUsersLayer(client);
-
-		db = client.getDatabase(DB_NAME);
-		db.createContainerIfNotExists("users", "user_id");
-
 		return instance;
 		
 	}
+	
+	private CosmosClient client;
+	private CosmosDatabase db;
+	private CosmosContainer users;
 	
 	public CosmosDBUsersLayer(CosmosClient client) {
 		this.client = client;

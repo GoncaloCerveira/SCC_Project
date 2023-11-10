@@ -8,16 +8,27 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
 
-import static db.DBClient.*;
-
 public class CosmosDBHousesLayer {
+	private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
+	private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
+	private static final String DB_NAME = "sccproject1";
+
 	private static CosmosDBHousesLayer instance;
 
 	public static synchronized CosmosDBHousesLayer getInstance() {
 		if( instance != null)
 			return instance;
 
-		CosmosClient client = createClient();
+		CosmosClient client = new CosmosClientBuilder()
+		         .endpoint(CONNECTION_URL)
+		         .key(DB_KEY)
+		         //.directMode() comment this if not to use direct mode
+		         .gatewayMode()
+		         // replace by .directMode() for better performance
+		         .consistencyLevel(ConsistencyLevel.SESSION)
+		         .connectionSharingAcrossClientsEnabled(true)
+		         .contentResponseOnWriteEnabled(true) // on write return the object written
+		         .buildClient();
 		instance = new CosmosDBHousesLayer(client);
 		return instance;
 
@@ -35,7 +46,6 @@ public class CosmosDBHousesLayer {
 		if( db != null)
 			return;
 		db = client.getDatabase(DB_NAME);
-		db.createContainerIfNotExists("houses", "id");
 		houses = db.getContainer("houses");
 		
 	}

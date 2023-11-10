@@ -2,60 +2,28 @@ package srv.resources;
 
 import data.house.House;
 import data.house.HouseDAO;
-
+import data.user.UserDAO;
 import db.CosmosDBHousesLayer;
 import db.CosmosDBUsersLayer;
 
+import java.util.UUID;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import java.util.logging.Logger;
 
 @Path("/house")
 public class HouseResource {
 
-    private CosmosDBHousesLayer hdb;
-    private CosmosDBUsersLayer udb;
+    private CosmosDBHousesLayer db;
     private MediaResource media;
-    //private AuthResource auth;
+    private AuthResource auth;
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
-
-    @POST
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@QueryParam("pwd") String pwd, House house) {
-        Log.info("createHouse of : " + house.getOwnerID());
-        if(house.getId() == null || house.getOwnerID()== null || house.getLocation() == null || pwd == null) {
-            Log.info("Null information was given");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-
-        boolean exists = udb.getUserById(house.getOwnerID()).iterator().hasNext();
-        if(!exists) {
-            Log.info("A user with the given id does not exist.");
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        if(!pwd.equals(udb.getUserById(house.getOwnerID()).iterator().next().getPwd())) {
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-        }
-
-        String id = UUID.randomUUID().toString();
-        house.setId(id);
-        hdb.putHouse(new HouseDAO(house));
-
-        String mediaId = id+"#"+System.currentTimeMillis();
-        //media.uploadImage(mediaId, contents);
-
-        Log.info("House added with id: "+id);
-        return Response.ok().build();
-    }
-
 
     @POST
     @Path("/")
@@ -64,9 +32,16 @@ public class HouseResource {
     public Response create(@CookieParam("scc:session") Cookie session, House house) {
         Log.info("createHouse of : " + house.getOwnerID());
         try {
-            //check correction of house
-            //auth.checkCookie(session, house.getOwnerID());
-            //create house
+            if(!house.validate()) {
+                Log.info("Null information was given");
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+            auth.checkCookie(session, house.getOwnerID());
+            String id = UUID.randomUUID().toString();
+            house.setId(id);
+            hdb.putHouse(new HouseDAO(house));
+            //adicionar ao user o id
+            Log.info("House created with id: " + id);
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -81,32 +56,33 @@ public class HouseResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, String pwd, House house) {
-        Log.info("updateHouse : " + id);
-        if(pwd == null) {
-            Log.info("Null information was given.");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-        if(house.getId() != null) {
-            if(!house.getId().equals(id))
-                Log.info("House ID cannot be modified.");
+    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, House house) {
+        try {
+            if(house.getId() != null) {
+                if(!house.getId().equals(id))
+                    Log.info("House ID cannot be modified.");
+            }
+            auth.checkCookie(session, house.getOwnerID());
+            var results = db.getHouseById(id).iterator();
+            if(!results.hasNext()) {
+                Log.info("House does not exist.");
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+
+            HouseDAO toUpdate = results.next();
+            //verificar se 
+            return Response.ok().build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new InternalServerErrorException(e);
         }
 
-        boolean exists = udb.getUserById(house.getOwnerID()).iterator().hasNext();
-        if(!exists) {
-            Log.info("A user with the given id does not exist.");
-            throw new WebApplicationException(Response.Status.CONFLICT);
-        }
-
-        if(!pwd.equals(udb.getUserById(house.getOwnerID()).iterator().next().getPwd())) {
-            Log.info("Password is incorrect.");
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-        }
 
         HouseDAO toUpdate = hdb.getHouseById(id).iterator().next();
-        //if(house.getPhoto() != null) {
+        if(house.getPhoto() != null) {
             //atualizar photo
-        //}
+        }
         if(house.getOwnerID() != null)
             house.setOwnerID(house.getOwnerID());
         if(house.getLocation() != null)

@@ -2,14 +2,19 @@ package srv.resources;
 
 import data.rental.Rental;
 import data.rental.RentalDAO;
-
 import db.CosmosDBRentalsLayer;
-
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import java.util.Iterator;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
