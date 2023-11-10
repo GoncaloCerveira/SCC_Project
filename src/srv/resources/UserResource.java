@@ -37,10 +37,10 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        if(!media.fileExists("images", user.getPhotoId())) {
+        /*if(!media.fileExists("images", user.getPhotoId())) {
             Log.info("ID of photo does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
-        }
+        }*/
 
         db.putUser(new UserDAO(user));
         Log.info("User created.");

@@ -13,7 +13,7 @@ import static db.DBClient.*;
 
 public class CosmosDBUsersLayer {
 	private static CosmosDBUsersLayer instance;
-	private CosmosClient client;
+	private final CosmosClient client;
 	private static CosmosDatabase db;
 	private CosmosContainer users;
 
@@ -24,23 +24,20 @@ public class CosmosDBUsersLayer {
 		CosmosClient client = createClient();
 		instance = new CosmosDBUsersLayer(client);
 
-		db = client.getDatabase(DB_NAME);
-		db.createContainerIfNotExists("users", "user_id");
-
 		return instance;
-		
+
 	}
-	
+
 	public CosmosDBUsersLayer(CosmosClient client) {
 		this.client = client;
 	}
-	
+
 	private synchronized void init() {
 		if( db != null)
 			return;
 		db = client.getDatabase(DB_NAME);
 		users = db.getContainer("users");
-		
+
 	}
 
 	public CosmosItemResponse<Object> delUserById(String id) {
@@ -48,12 +45,12 @@ public class CosmosDBUsersLayer {
 		PartitionKey key = new PartitionKey( id);
 		return users.deleteItem(id, key, new CosmosItemRequestOptions());
 	}
-	
+
 	public CosmosItemResponse<Object> delUser(UserDAO user) {
 		init();
 		return users.deleteItem(user, new CosmosItemRequestOptions());
 	}
-	
+
 	public CosmosItemResponse<UserDAO> putUser(UserDAO user) {
 		init();
 		CosmosItemResponse<UserDAO> res = users.createItem(user);
@@ -62,7 +59,7 @@ public class CosmosDBUsersLayer {
 		else throw new NotFoundException();
 		//return users.createItem(user);
 	}
-	
+
 	public CosmosPagedIterable<UserDAO> getUserById( String id) {
 		init();
 		return users.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(), UserDAO.class);
@@ -76,6 +73,6 @@ public class CosmosDBUsersLayer {
 	public void close() {
 		client.close();
 	}
-	
-	
+
+
 }
