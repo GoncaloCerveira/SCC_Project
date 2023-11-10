@@ -143,7 +143,7 @@
                   </resources>
               </deployment>
               <resourceGroup>scc-rg-${authors}</resourceGroup>
-              <appName>scc-${authors}</appName>
+              <appName>scc-60011-68881-68882-v2</appName>
           </configuration>
       </plugin>
     </plugins>

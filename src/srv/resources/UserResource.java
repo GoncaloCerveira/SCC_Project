@@ -48,22 +48,21 @@ public class UserResource {
     }
 
     @PATCH
-    @Path("/{id}")
+    @Path("/{id}/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, User user) {
+    public Response update(/*@CookieParam("scc:session") Cookie session,*/ @PathParam("id") String id, User user) {
         Log.info("updateUser : " + id);
         try {
             //auth.checkCookie(session, id);
 
             var results = db.getUserById(id).iterator();
             if(!results.hasNext()) {
-                Log.info("User does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
             UserDAO toUpdate = results.next();
-            if(user.getPhotoId() != null) {
+            /*if(user.getPhotoId() != null) {
                 if(!media.fileExists("images", user.getPhotoId())) {
                     Log.info("ID of photo does not exist");
                     throw new WebApplicationException(Response.Status.CONFLICT);
@@ -72,7 +71,7 @@ public class UserResource {
                     toUpdate.setPhotoId(user.getPhotoId());
                     media.deleteFile("images", id);
                 }
-            }
+            }*/
             if(user.getName() != null)
                 toUpdate.setName(user.getName());
             if(user.getPwd() != null)
@@ -93,13 +92,13 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("id") String id) {
-            var results = db.getUserById(id).iterator();
-            if(!results.hasNext()) {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-            UserDAO toDelete = results.next();
-            db.delUser(toDelete);
-            return Response.ok().build();
+        var results = db.getUserById(id).iterator();
+        if(!results.hasNext()) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        UserDAO toDelete = results.next();
+        db.delUser(toDelete);
+        return Response.ok().build();
     }
 
 }

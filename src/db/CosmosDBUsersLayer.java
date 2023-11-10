@@ -7,6 +7,7 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import data.house.HouseDAO;
 import data.user.UserDAO;
 
 import static db.DBClient.*;
@@ -53,8 +54,9 @@ public class CosmosDBUsersLayer {
 
 	public CosmosItemResponse<UserDAO> putUser(UserDAO user) {
 		init();
-		CosmosItemResponse<UserDAO> res = users.createItem(user);
-		if(res.getStatusCode()<300)
+		//CosmosItemResponse<UserDAO> res = users.createItem(user);
+		CosmosItemResponse<UserDAO> res = users.replaceItem(user, user.getId(), new PartitionKey(user.getId()), new CosmosItemRequestOptions());
+		if(res.getStatusCode() < 300)
 			return res;
 		else throw new NotFoundException();
 		//return users.createItem(user);
