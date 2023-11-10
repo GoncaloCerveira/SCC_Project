@@ -5,6 +5,7 @@ import com.azure.cosmos.implementation.NotFoundException;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
 import data.user.UserDAO;
@@ -53,7 +54,7 @@ public class CosmosDBHousesLayer {
 	
 	public CosmosItemResponse<HouseDAO> putHouse(HouseDAO house) {
 		init();
-		CosmosItemResponse<HouseDAO> res = houses.createItem(house);
+		CosmosItemResponse<HouseDAO> res = houses.replaceItem(house, house.getId(), new PartitionKey(house.getId()), new CosmosItemRequestOptions());
 		if(res.getStatusCode()<300)
 			return res;
 		else throw new NotFoundException();

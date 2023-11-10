@@ -23,6 +23,8 @@ public class House {
         this.photoIDs = photoIDs;
     }
 
+    public House() {}
+
     public boolean validate() {
         return this.location!=null && this.ownerID!=null && this.photoIDs!=null;
     }

@@ -95,9 +95,9 @@ public class HouseResource {
             //atualizar photo
         //}
         if(house.getOwnerID() != null)
-            house.setOwnerID(house.getOwnerID());
+            toUpdate.setOwnerID(house.getOwnerID());
         if(house.getLocation() != null)
-            house.setLocation(house.getLocation());
+            toUpdate.setLocation(house.getLocation());
         //toUpdate.setPwd(Hash.of(pwd));
 
         hdb.putHouse(toUpdate);
