@@ -90,6 +90,27 @@
       <artifactId>log4j-core</artifactId>
       <version>2.20.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.azure.resourcemanager</groupId>
+      <artifactId>azure-resourcemanager</artifactId>
+      <version>2.31.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.azure.resourcemanager</groupId>
+      <artifactId>azure-resourcemanager-resources</artifactId>
+      <version>2.31.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.azure.resourcemanager</groupId>
+      <artifactId>azure-resourcemanager-storage</artifactId>
+      <version>2.31.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.azure</groupId>
+      <artifactId>azure-identity</artifactId>
+      <version>1.10.1</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -143,7 +164,7 @@
                   </resources>
               </deployment>
               <resourceGroup>scc-rg-${authors}</resourceGroup>
-              <appName>scc-60011-68881-68882-v2</appName>
+              <appName>scc-60011-68881-68882</appName>
           </configuration>
       </plugin>
     </plugins>
