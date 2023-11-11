@@ -13,6 +13,10 @@ public class HouseDAO extends House implements ObjectDAO {
         super(h.getId(), h.getName(), h.getLocation(),h.getOwnerId());
     }
 
+    public HouseDAO() {
+
+    }
+
     @Override
     public String get_rid() {
         return _rid;

@@ -13,6 +13,10 @@ public class RentalDAO extends Rental implements ObjectDAO {
         super(r.getId(), r.getHouseId(), r.getUserId(), r.getStartDate(), r.getEndDate(), r.getPrice());
     }
 
+    public RentalDAO() {
+
+    }
+
     @Override
     public String get_rid() {
         return _rid;

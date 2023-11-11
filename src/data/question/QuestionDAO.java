@@ -13,6 +13,10 @@ public class QuestionDAO extends Question implements ObjectDAO {
         super(q.getId(), q.getHouseId(), q.getUserId(), q.getOwnerId(), q.getQuestion(), q.getReply());
     }
 
+    public QuestionDAO() {
+
+    }
+
     @Override
     public String get_rid() {
         return _rid;
