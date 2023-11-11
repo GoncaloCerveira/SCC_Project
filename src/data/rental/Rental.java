@@ -1,16 +1,14 @@
 package data.rental;
 
+/**
+ * Represents a Rental, as returned to the clients
+ */
 public class Rental {
-
     private String id;
     private String houseId;
     private String userId;
-    private int startDate;    // Para podermos verificar se uma casa está livre num certo período de tempo
-                              // Caso não seja necessário fica como estava antes
-                              // Concatenar ano + mês + dia para ser mais fácil comparar na base de dados
+    private int startDate;
     private int endDate;
-
-    // total price
     private int price;
 
     public Rental() {}
@@ -79,4 +77,6 @@ public class Rental {
     public void setPrice(int price) {
         this.price = price;
     }
+
+
 }

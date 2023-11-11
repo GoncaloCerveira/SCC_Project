@@ -55,20 +55,17 @@ public class CosmosDBUsersLayer {
 		if(res.getStatusCode()<300)
 			return res;
 		else throw new NotFoundException();
-		//return rentals.createItem(rentals);
 	}
 
 	public CosmosItemResponse<UserDAO> putUser(UserDAO user) {
 		init();
-		//CosmosItemResponse<UserDAO> res = users.createItem(user);
-		CosmosItemResponse<UserDAO> res = users.replaceItem(user, user.getId(), new PartitionKey(user.getId()), new CosmosItemRequestOptions());
+		CosmosItemResponse<UserDAO> res = users.replaceItem(user, user.getId(), new PartitionKey(user.getName()), new CosmosItemRequestOptions());
 		if(res.getStatusCode() < 300)
 			return res;
 		else throw new NotFoundException();
-		//return users.createItem(user);
 	}
 
-	public CosmosPagedIterable<UserDAO> getUserById( String id) {
+	public CosmosPagedIterable<UserDAO> getUserById(String id) {
 		init();
 		return users.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(), UserDAO.class);
 	}

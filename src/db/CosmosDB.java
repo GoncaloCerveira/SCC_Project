@@ -29,10 +29,11 @@ public class CosmosDB {
         CosmosClient client = createClient();
         CosmosDatabase db = client.getDatabase(DB_NAME);
 
-        db.createContainerIfNotExists("houses", "/id");
-        db.createContainerIfNotExists("questions", "/id");
-        db.createContainerIfNotExists("rentals", "/id");
-        db.createContainerIfNotExists("users", "/id");
+        db.createContainerIfNotExists("houses", "/location");
+        db.createContainerIfNotExists("questions", "/ownerId");
+        db.createContainerIfNotExists("rentals", "/houseId");
+        db.createContainerIfNotExists("users", "/name");
+        db.createContainerIfNotExists("media", "/itemId");
     }
 
 }

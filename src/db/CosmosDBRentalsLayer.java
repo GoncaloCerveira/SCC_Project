@@ -56,7 +56,6 @@ public class CosmosDBRentalsLayer {
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
-        //return rentals.createItem(rentals);
     }
 
     public CosmosItemResponse<RentalDAO> putRental(RentalDAO rental) {
@@ -65,7 +64,6 @@ public class CosmosDBRentalsLayer {
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
-        //return rentals.createItem(rentals);
     }
 
     public CosmosPagedIterable<RentalDAO> getRentalById(String id) {
@@ -91,5 +89,6 @@ public class CosmosDBRentalsLayer {
     public void close() {
         client.close();
     }
+
 
 }

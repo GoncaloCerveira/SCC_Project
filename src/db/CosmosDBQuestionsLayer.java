@@ -59,16 +59,14 @@ public class CosmosDBQuestionsLayer {
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
-        //return rentals.createItem(rentals);
     }
 
     public CosmosItemResponse<QuestionDAO> putQuestion(QuestionDAO question) {
         init();
-        CosmosItemResponse<QuestionDAO> res = questions.replaceItem(question, question.getId(), new PartitionKey(question.getId()), new CosmosItemRequestOptions());
+        CosmosItemResponse<QuestionDAO> res = questions.replaceItem(question, question.getId(), new PartitionKey(question.getOwnerId()), new CosmosItemRequestOptions());
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
-        //return questions.createItem(question);
     }
 
     public CosmosPagedIterable<QuestionDAO> getQuestionById(String id) {
@@ -94,5 +92,6 @@ public class CosmosDBQuestionsLayer {
     public void close() {
         client.close();
     }
+
 
 }

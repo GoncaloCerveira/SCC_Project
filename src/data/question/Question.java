@@ -1,11 +1,13 @@
 package data.question;
 
+/**
+ * Represents a Question, as returned to the clients
+ */
 public class Question {
     private String id;
     private String houseId;
     private String userId;
-    private String ownerId; // Facilita a pesquisa de questões que um user recebeu sem ser necessário
-                            // pesquisar pelos Ids das casas dele
+    private String ownerId;
     private String question;
     private String reply;
 
@@ -75,4 +77,6 @@ public class Question {
     public void setReply(String reply) {
         this.reply = reply;
     }
+
+
 }

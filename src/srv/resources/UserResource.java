@@ -1,31 +1,36 @@
 package srv.resources;
 
+import data.media.MediaDAO;
 import data.user.User;
 import data.user.UserDAO;
 
+import db.CosmosDBHousesLayer;
+import db.CosmosDBMediaLayer;
 import db.CosmosDBUsersLayer;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Path("/user")
 public class UserResource {
-
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
-    private MediaResource media;
-    //private AuthResource auth;
+    private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
+    private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
+    private final MediaResource media = new MediaResource();
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
     @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(User user) {
+    public Response create(User user, byte[] contents) {
         Log.info("createUser : " + user.getId());
-        if(!user.validate()) {
+
+        if(!user.validate() || contents == null) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -36,10 +41,9 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        /*if(!media.fileExists("images", user.getPhotoId())) {
-            Log.info("ID of photo does not exist.");
-            throw new WebApplicationException(Response.Status.CONFLICT);
-        }*/
+        String mediaId = UUID.randomUUID().toString();
+        media.uploadImage(mediaId, contents);
+        mdb.postMedia(new MediaDAO(mediaId, user.getId()));
 
         udb.postUser(new UserDAO(user));
         Log.info("User created.");
@@ -48,42 +52,33 @@ public class UserResource {
 
     @PATCH
     @Path("/{id}/update")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(/*@CookieParam("scc:session") Cookie session,*/ @PathParam("id") String id, User user) {
+    public Response update(@PathParam("id") String id, User user, byte[] contents) {
         Log.info("updateUser : " + id);
-        try {
-            //auth.checkCookie(session, id);
 
-            var results = udb.getUserById(id).iterator();
-            if(!results.hasNext()) {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-
-            UserDAO toUpdate = results.next();
-            /*if(user.getPhotoId() != null) {
-                if(!media.fileExists("images", user.getPhotoId())) {
-                    Log.info("ID of photo does not exist");
-                    throw new WebApplicationException(Response.Status.CONFLICT);
-                }
-                else {
-                    toUpdate.setPhotoId(user.getPhotoId());
-                    media.deleteFile("images", id);
-                }
-            }*/
-            if(user.getName() != null)
-                toUpdate.setName(user.getName());
-            if(user.getPwd() != null)
-                //toUpdate.setPwd(Hash.of(pwd));
-                toUpdate.setPwd(user.getPwd());
-            udb.putUser(toUpdate);
-            Log.info("User updated.");
-            return Response.ok().build();
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new InternalServerErrorException(e);
+        var results = udb.getUserById(id).iterator();
+        if(!results.hasNext()) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
+
+        UserDAO toUpdate = results.next();
+
+        if(user.getName() != null) {
+            toUpdate.setName(user.getName());
+        }
+        if(user.getPwd() != null) {
+            toUpdate.setPwd(user.getPwd());
+        }
+        if(contents != null) {
+            String mediaId = UUID.randomUUID().toString();
+            media.uploadImage(mediaId, contents);
+            mdb.postMedia(new MediaDAO(mediaId, id));
+        }
+
+        udb.putUser(toUpdate);
+        Log.info("User updated.");
+        return Response.ok().build();
     }
 
     @DELETE
@@ -92,12 +87,34 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("id") String id) {
         var results = udb.getUserById(id).iterator();
+
         if(!results.hasNext()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
+
         UserDAO toDelete = results.next();
+
+        for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
+            media.deleteFile("images", mediaDAO.getMediaId());
+        }
+
         udb.delUser(toDelete);
         return Response.ok().build();
     }
+
+    @GET
+    @Path("/{id}/list")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listHouses(@PathParam("id") String id) {
+        var results = udb.getUserById(id).iterator();
+
+        if(!results.hasNext()) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        return Response.ok(hdb.getUserHouses(id)).build();
+    }
+
 
 }

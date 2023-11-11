@@ -54,19 +54,17 @@ public class CosmosDBHousesLayer {
 		if(res.getStatusCode()<300)
 			return res;
 		else throw new NotFoundException();
-		//return rentals.createItem(rentals);
 	}
 	
 	public CosmosItemResponse<HouseDAO> putHouse(HouseDAO house) {
 		init();
-		CosmosItemResponse<HouseDAO> res = houses.replaceItem(house, house.getId(), new PartitionKey(house.getId()), new CosmosItemRequestOptions());
+		CosmosItemResponse<HouseDAO> res = houses.replaceItem(house, house.getId(), new PartitionKey(house.getLocation()), new CosmosItemRequestOptions());
 		if(res.getStatusCode()<300)
 			return res;
 		else throw new NotFoundException();
-		//return houses.createItem(house);
 	}
 	
-	public CosmosPagedIterable<HouseDAO> getHouseById( String id) {
+	public CosmosPagedIterable<HouseDAO> getHouseById(String id) {
 		init();
 		return houses.queryItems("SELECT * FROM houses WHERE houses.id=\"" + id + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
@@ -74,6 +72,21 @@ public class CosmosDBHousesLayer {
 	public CosmosPagedIterable<HouseDAO> getHouses() {
 		init();
 		return houses.queryItems("SELECT * FROM houses ", new CosmosQueryRequestOptions(), HouseDAO.class);
+	}
+
+	public CosmosPagedIterable<HouseDAO> getUserHouses(String ownerId) {
+		init();
+		return houses.queryItems("SELECT * FROM houses WHERE houses.ownerId=\"" + ownerId + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+	}
+
+	public CosmosPagedIterable<HouseDAO> getHousesByLocation(String location) {
+		init();
+		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+	}
+
+	public CosmosPagedIterable<HouseDAO> getHousesByLocationForPeriod(String location, String startDate, String endDate) {
+		init();
+		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
 	public void close() {

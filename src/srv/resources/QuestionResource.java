@@ -16,7 +16,6 @@ import java.util.logging.Logger;
  */
 @Path("/house/{id}/question")
 public class QuestionResource {
-
     private final CosmosDBQuestionsLayer qdb = CosmosDBQuestionsLayer.getInstance();
     private static final Logger Log = Logger.getLogger(QuestionResource.class.getName());
 
@@ -90,6 +89,6 @@ public class QuestionResource {
         }
 
         Log.info("Questions retrieved.");
-        return Response.ok(/*questions*/).build();
+        return Response.ok(questions).build();
     }
 }

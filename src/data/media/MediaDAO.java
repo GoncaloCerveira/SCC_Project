@@ -1,16 +1,18 @@
-package data.house;
+package data.media;
 
 import data.ObjectDAO;
+import data.house.House;
 
-/**
- * Represents a House, as stored in the database
- */
-public class HouseDAO extends House implements ObjectDAO {
+public class MediaDAO extends Media implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-    public HouseDAO(House h) {
-        super(h.getId(), h.getName(), h.getLocation(),h.getOwnerId());
+    public MediaDAO(Media m) {
+        super(m.getMediaId(), m.getItemId());
+    }
+
+    public MediaDAO(String mediaId, String itemId) {
+        super(mediaId, itemId);
     }
 
     @Override

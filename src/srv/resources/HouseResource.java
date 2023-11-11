@@ -3,7 +3,9 @@ package srv.resources;
 import data.house.House;
 import data.house.HouseDAO;
 
+import data.media.MediaDAO;
 import db.CosmosDBHousesLayer;
+import db.CosmosDBMediaLayer;
 import db.CosmosDBUsersLayer;
 
 import jakarta.ws.rs.*;
@@ -16,25 +18,25 @@ import java.util.logging.Logger;
 
 @Path("/house")
 public class HouseResource {
-
     private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
-    private MediaResource media;
-    //private AuthResource auth;
+    private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
+    private final MediaResource media = new MediaResource();
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
 
     @POST
     @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(House house) {
-        Log.info("createHouse of : " + house.getOwnerID());
-        if(house.getId() == null || house.getOwnerID()== null || house.getLocation() == null) {
+    public Response create(House house, byte[] contents) {
+        Log.info("createHouse of : " + house.getOwnerId());
+
+        if(!house.validate() || contents == null) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = udb.getUserById(house.getOwnerID()).iterator().hasNext();
+        boolean exists = udb.getUserById(house.getOwnerId()).iterator().hasNext();
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -42,41 +44,21 @@ public class HouseResource {
 
         String id = UUID.randomUUID().toString();
         house.setId(id);
+
+        String mediaId = UUID.randomUUID().toString();
+        media.uploadImage(mediaId, contents);
+        mdb.postMedia(new MediaDAO(mediaId, house.getId()));
+
         hdb.postHouse(new HouseDAO(house));
-
-        String mediaId = id+"#"+System.currentTimeMillis();
-        //media.uploadImage(mediaId, contents);
-
-        Log.info("House added with id: "+id);
+        Log.info("House added with id: " + id);
         return Response.ok().build();
     }
 
-
-    @POST
-    @Path("/create")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@CookieParam("scc:session") Cookie session, House house) {
-        Log.info("createHouse of : " + house.getOwnerID());
-        try {
-            //check correction of house
-            //auth.checkCookie(session, house.getOwnerID());
-            //create house
-            return Response.ok().build();
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new InternalServerErrorException(e);
-        }
-    }
-
-
-
     @PATCH
     @Path("/{id}/update")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, House house) {
+    public Response update(@PathParam("id") String id, House house, byte[] contents) {
         Log.info("updateHouse : " + id);
 
         if(house.getId() != null) {
@@ -84,21 +66,25 @@ public class HouseResource {
                 Log.info("House ID cannot be modified.");
         }
 
-        boolean exists = udb.getUserById(house.getOwnerID()).iterator().hasNext();
+        boolean exists = udb.getUserById(house.getOwnerId()).iterator().hasNext();
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
         HouseDAO toUpdate = hdb.getHouseById(id).iterator().next();
-        //if(house.getPhoto() != null) {
-            //atualizar photo
-        //}
-        if(house.getOwnerID() != null)
-            toUpdate.setOwnerID(house.getOwnerID());
-        if(house.getLocation() != null)
+
+        if(house.getOwnerId() != null) {
+            toUpdate.setOwnerId(house.getOwnerId());
+        }
+        if(house.getLocation() != null) {
             toUpdate.setLocation(house.getLocation());
-        //toUpdate.setPwd(Hash.of(pwd));
+        }
+        if(contents != null) {
+            String mediaId = UUID.randomUUID().toString();
+            media.uploadImage(mediaId, contents);
+            mdb.postMedia(new MediaDAO(mediaId, id));
+        }
 
         hdb.putHouse(toUpdate);
         Log.info("House updated.");
@@ -120,12 +106,24 @@ public class HouseResource {
 
         HouseDAO house = hdb.getHouseById(id).iterator().next();
 
-        hdb.delHouse(house);
-        //apagar media desta casa
-        //apagar do utilizador e dos rentals
+        for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
+            media.deleteFile("images", mediaDAO.getMediaId());
+        }
 
+        hdb.delHouse(house);
         Log.info("House deleted.");
         return Response.ok().build();
     }
+
+    @GET
+    @Path("/{location}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listLocation(@PathParam("location") String location) {
+        Log.info("listLocation: " + location);
+
+        return Response.ok(hdb.getHousesByLocation(location)).build();
+    }
+
 
 }

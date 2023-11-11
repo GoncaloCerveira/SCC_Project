@@ -1,31 +1,25 @@
 package data.house;
 
-import java.util.Map;
-
+/**
+ * Represents a House, as returned to the clients
+ */
 public class House {
-
     private String id;
+    private String name;
     private String location;
-    private String ownerID;
-    private String[] photoIDs;
-
-    public House(String id, String location, String ownerId) {
-        this.id = id;
-        this.location = location;
-        this.ownerID = ownerId;
-    }
-
-    public House(String id, String location, String ownerId, String[] photoIDs) {
-        this.id = id;
-        this.location = location;
-        this.ownerID = ownerId;
-        this.photoIDs = photoIDs;
-    }
+    private String ownerId;
 
     public House() {}
 
+    public House(String id, String name, String location, String ownerId) {
+        this.id = id;
+        this.name = name;
+        this.location = location;
+        this.ownerId = ownerId;
+    }
+
     public boolean validate() {
-        return this.location!=null && this.ownerID!=null && this.photoIDs!=null;
+        return this.location!=null && this.ownerId !=null;
     }
 
     public String getId() {
@@ -36,6 +30,14 @@ public class House {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -44,12 +46,13 @@ public class House {
         this.location = location;
     }
 
-    public String getOwnerID() {
-        return ownerID;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwnerID(String ownerID) {
-        this.ownerID = ownerID;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
+
 
 }

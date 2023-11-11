@@ -17,7 +17,6 @@ import java.util.logging.Logger;
  */
 @Path("/house/{id}/rental")
 public class RentalResource {
-
     private final CosmosDBRentalsLayer rdb = CosmosDBRentalsLayer.getInstance();
     private static final Logger Log = Logger.getLogger(RentalResource.class.getName());
 

@@ -9,8 +9,6 @@ public class UserDAO extends User implements ObjectDAO {
 	private String _rid; // added by CosmosDB, which is the id of item
 	private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-	public UserDAO() {}
-
 	public UserDAO(User u) {
 		super(u.getId(), u.getName(), u.getPwd());
 	}
@@ -34,5 +32,6 @@ public class UserDAO extends User implements ObjectDAO {
 	public void set_ts(String _ts) {
 		this._ts = _ts;
 	}
+
 
 }
