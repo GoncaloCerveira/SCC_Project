@@ -46,7 +46,7 @@ public class AzureManagement {
 	static final String AZURE_COSMOSDB_DATABASE = "sccproject1" + MY_SUFFIX;	// Cosmos DB database name
 	static final String[] BLOB_CONTAINERS = { "images" };	// TODO: Containers to add to the blob storage
 
-	static final String[][] COSMOS_COLLECTIONS = { { "/houses", "/location" }, { "questions", "/ownerId" },
+	static final String[][] COSMOS_COLLECTIONS = { { "houses", "/location" }, { "questions", "/ownerId" },
 			{ "rentals", "/houseId" }, { "users", "/name" }, { "media", "/itemId" }};
 
 	static final Region[] REGIONS = new Region[] { Region.EUROPE_WEST}; // Define the regions to deploy resources here
