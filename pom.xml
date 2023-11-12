@@ -163,8 +163,8 @@
                       </resource>
                   </resources>
               </deployment>
-              <resourceGroup>scc24-rg-${authors}</resourceGroup>
-              <appName>scc24app${authors</appName>
+              <resourceGroup>scc24-rg-westeurope-${authors}</resourceGroup>
+              <appName>scc24appwesteurope${authors}</appName>
           </configuration>
       </plugin>
     </plugins>

@@ -30,7 +30,6 @@ public class TestRentals {
             u.setId(uId);
             u.setName("SCC " + uId);
             u.setPwd("super_secret");
-            u.setPhotoId("0:34253455");
 
             res = udb.putUser(u);
             System.out.println( "Put result");

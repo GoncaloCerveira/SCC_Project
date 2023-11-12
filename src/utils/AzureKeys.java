@@ -1,9 +1,10 @@
 package utils;
 
-import static utils.AzureProperties.*;
-
 public class AzureKeys {
-
+    private static final String BLOB_KEY = "BlobStoreConnection";
+    private static final String COSMOSDB_KEY = "COSMOSDB_KEY";
+    private static final String COSMOSDB_URL = "COSMOSDB_URL";
+    private static final String COSMOSDB_DATABASE = "COSMOSDB_DATABASE";
     public static String CONNECTION_URL = "";
     public static String DB_KEY = "";
     public static String DB_NAME = "";
@@ -12,9 +13,9 @@ public class AzureKeys {
     public AzureKeys() {}
 
     public static void setKeys() {
-        CONNECTION_URL = AzureProperties.getProperties().getProperty(COSMOSDB_URL);
-        DB_KEY = AzureProperties.getProperties().getProperty(COSMOSDB_KEY);
-        DB_NAME = AzureProperties.getProperties().getProperty(COSMOSDB_DATABASE);
-        STORAGE_CONNECTION_STRING = AzureProperties.getProperties().getProperty(BLOB_KEY);
+        CONNECTION_URL = System.getenv(COSMOSDB_URL);
+        DB_KEY = System.getenv(COSMOSDB_KEY);
+        DB_NAME = System.getenv(COSMOSDB_DATABASE);
+        STORAGE_CONNECTION_STRING = System.getenv(BLOB_KEY);
     }
 }

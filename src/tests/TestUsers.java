@@ -26,7 +26,6 @@ public class TestUsers
             u.setId(id);
             u.setName("SCC " + id);
             u.setPwd("super_secret");
-            u.setPhotoId("0:34253455");
             //u.setHouseIds(new String[0]);
 
             res = db.putUser(u);
@@ -53,7 +52,6 @@ public class TestUsers
             u.setId(id);
             u.setName("SCC " + id);
             u.setPwd("super_secret");
-            u.setPhotoId("0:34253455");
             //u.setHouseIds(new String[0]);
 
             res = db.putUser(u);
