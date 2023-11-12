@@ -13,6 +13,10 @@ public class UserDAO extends User implements ObjectDAO {
 		super(u.getId(), u.getName(), u.getPwd());
 	}
 
+	public UserDAO(String id, String name, String pwd) {
+		super(id, name, pwd);
+	}
+
 	public UserDAO() {
 
 	}
