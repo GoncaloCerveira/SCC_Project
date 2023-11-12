@@ -41,9 +41,9 @@ public class AzureManagement {
 
 	// TODO: change your suffix and other names if you want
 	static final String MY_SUFFIX = "BGM"; // Add your suffix here
-	
-	static final String AZURE_COSMOSDB_NAME = "scc" + MY_SUFFIX;	// Cosmos DB account name
-	static final String AZURE_COSMOSDB_DATABASE = "sccproject1" + MY_SUFFIX;	// Cosmos DB database name
+
+	static final String AZURE_COSMOSDB_NAME = "scc24" + MY_SUFFIX;	// Cosmos DB account name
+	static final String AZURE_COSMOSDB_DATABASE = "scc24db" + MY_SUFFIX;	// Cosmos DB database name
 	static final String[] BLOB_CONTAINERS = { "images" };	// TODO: Containers to add to the blob storage
 
 	static final String[][] COSMOS_COLLECTIONS = { { "houses", "/location" }, { "questions", "/ownerId" },
@@ -53,12 +53,12 @@ public class AzureManagement {
 	
 	// Name of resoruce group for each region
 	static final String[] AZURE_RG_REGIONS = Arrays.stream(REGIONS)
-			.map(reg -> "scc-rg-" + reg.name() + "-" + MY_SUFFIX).toArray(String[]::new);
+			.map(reg -> "scc24-rg-" + reg.name() + "-" + MY_SUFFIX).toArray(String[]::new);
 
 	// Name of application server to be launched in each regions -- launching the application
 	// server must be done using mvn, as you have been doing
 	// TODO: this name should be the same as defined in your app
-	static final String[] AZURE_APP_NAME = Arrays.stream(REGIONS).map(reg -> "scc" + reg.name() + MY_SUFFIX)
+	static final String[] AZURE_APP_NAME = Arrays.stream(REGIONS).map(reg -> "scc24app" + reg.name() + MY_SUFFIX)
 			.toArray(String[]::new);
 
 	// Name of Blob storage account
