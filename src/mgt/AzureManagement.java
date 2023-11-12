@@ -1,4 +1,4 @@
-package utils;
+package mgt;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,6 +45,9 @@ public class AzureManagement {
 	static final String AZURE_COSMOSDB_NAME = "scc" + MY_SUFFIX;	// Cosmos DB account name
 	static final String AZURE_COSMOSDB_DATABASE = "sccproject1" + MY_SUFFIX;	// Cosmos DB database name
 	static final String[] BLOB_CONTAINERS = { "images" };	// TODO: Containers to add to the blob storage
+
+	static final String[][] COSMOS_COLLECTIONS = { { "/houses", "/location" }, { "questions", "/ownerId" },
+			{ "rentals", "/houseId" }, { "users", "/name" }, { "media", "/itemId" }};
 
 	static final Region[] REGIONS = new Region[] { Region.EUROPE_WEST}; // Define the regions to deploy resources here
 	
@@ -269,9 +272,8 @@ public class AzureManagement {
 	static void createCosmosDatabase(CosmosClient client, String dbname) {
 		// create database if not exists
 		System.out.println("Creating CosmosDB database: name = " + dbname);
-		CosmosDatabaseProperties props = new CosmosDatabaseProperties(dbname);
 		ThroughputProperties throughputProperties = ThroughputProperties.createManualThroughput(400);
-		client.createDatabase(props, throughputProperties);
+		client.createDatabaseIfNotExists(dbname, throughputProperties);
 		System.out.println("CosmosDB database created with success: name = " + dbname);
 	}
 
@@ -448,16 +450,11 @@ public class AzureManagement {
 							createCosmosDatabase(cosmosClient, AZURE_COSMOSDB_DATABASE);
 
 							//TODO: create the collections you have in your application
-							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "houses", "/location",
-									null);
-							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "questions", "/ownerId",
-									null);
-							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "rentals", "/houseId",
-									null);
-							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "users", "/name",
-									null);
-							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "media", "/itemId",
-									null);
+
+							for (String[] collection : COSMOS_COLLECTIONS) {
+								createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, collection[0], collection[1],
+										null);
+							}
 
 							System.err.println("Azure Cosmos DB resources created with success");
 
@@ -470,7 +467,7 @@ public class AzureManagement {
 					threads.add(th);
 				}
 
-				/*if (CREATE_REDIS) {
+				if (CREATE_REDIS) {
 					Thread th = new Thread(() -> {
 						try {
 							final AzureResourceManager azure0 = createManagementClient();
@@ -489,7 +486,7 @@ public class AzureManagement {
 					});
 					th.start();
 					threads.add(th);
-				}*/
+				}
 
 			}
 			for (Thread th : threads) {

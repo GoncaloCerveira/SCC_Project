@@ -8,6 +8,7 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
+import utils.AzureKeys;
 
 public class CosmosDBHousesLayer {
 	private static CosmosDBHousesLayer instance;
@@ -33,7 +34,7 @@ public class CosmosDBHousesLayer {
 	private synchronized void init() {
 		if( db != null)
 			return;
-		db = client.getDatabase(CosmosDB.DB_NAME);
+		db = client.getDatabase(AzureKeys.DB_NAME);
 		houses = db.getContainer("houses");
 		
 	}

@@ -9,6 +9,7 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
 import data.rental.RentalDAO;
+import utils.AzureKeys;
 
 public class CosmosDBRentalsLayer {
     private static CosmosDBRentalsLayer instance;
@@ -34,7 +35,7 @@ public class CosmosDBRentalsLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(CosmosDB.DB_NAME);
+        db = client.getDatabase(AzureKeys.DB_NAME);
         rentals = db.getContainer("rentals");
 
     }

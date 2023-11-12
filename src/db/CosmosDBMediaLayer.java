@@ -4,13 +4,11 @@ import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
 import com.azure.cosmos.implementation.NotFoundException;
-import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
-import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
-import data.house.HouseDAO;
 import data.media.MediaDAO;
+import utils.AzureKeys;
 
 public class CosmosDBMediaLayer {
     private static CosmosDBMediaLayer instance;
@@ -36,7 +34,7 @@ public class CosmosDBMediaLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(CosmosDB.DB_NAME);
+        db = client.getDatabase(AzureKeys.DB_NAME);
         media = db.getContainer("media");
 
     }
