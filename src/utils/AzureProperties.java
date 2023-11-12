@@ -1,6 +1,6 @@
 package utils;
 
-public class AzureKeys {
+public class AzureProperties {
     private static final String BLOB_KEY = "BlobStoreConnection";
     private static final String COSMOSDB_KEY = "COSMOSDB_KEY";
     private static final String COSMOSDB_URL = "COSMOSDB_URL";
@@ -10,7 +10,7 @@ public class AzureKeys {
     public static String DB_NAME = "";
     public static String STORAGE_CONNECTION_STRING = "";
 
-    public AzureKeys() {}
+    public AzureProperties() {}
 
     public static void setKeys() {
         CONNECTION_URL = System.getenv(COSMOSDB_URL);

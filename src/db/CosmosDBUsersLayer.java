@@ -8,7 +8,7 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.user.UserDAO;
-import utils.AzureKeys;
+import utils.AzureProperties;
 
 public class CosmosDBUsersLayer {
 	private static CosmosDBUsersLayer instance;
@@ -34,7 +34,7 @@ public class CosmosDBUsersLayer {
 	private synchronized void init() {
 		if( db != null)
 			return;
-		db = client.getDatabase(AzureKeys.DB_NAME);
+		db = client.getDatabase(AzureProperties.DB_NAME);
 		users = db.getContainer("users");
 
 	}

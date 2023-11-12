@@ -6,8 +6,7 @@ import srv.resources.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import db.CosmosDB;
-import utils.AzureKeys;
+import utils.AzureProperties;
 
 public class MainApplication extends Application
 {
@@ -15,7 +14,7 @@ public class MainApplication extends Application
 	private Set<Class<?>> resources = new HashSet<Class<?>>();
 
 	public MainApplication() {
-		AzureKeys.setKeys();
+		AzureProperties.setKeys();
 		resources.add(ControlResource.class);
 		resources.add(HouseResource.class);
 		resources.add(QuestionResource.class);

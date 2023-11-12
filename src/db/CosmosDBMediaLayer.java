@@ -8,7 +8,7 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.media.MediaDAO;
-import utils.AzureKeys;
+import utils.AzureProperties;
 
 public class CosmosDBMediaLayer {
     private static CosmosDBMediaLayer instance;
@@ -34,7 +34,7 @@ public class CosmosDBMediaLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(AzureKeys.DB_NAME);
+        db = client.getDatabase(AzureProperties.DB_NAME);
         media = db.getContainer("media");
 
     }

@@ -9,7 +9,7 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 // TODO
 import data.question.QuestionDAO;
-import utils.AzureKeys;
+import utils.AzureProperties;
 
 // TODO
 // Modificar o id para usar o id da casa e o id do user como chave da questão
@@ -38,7 +38,7 @@ public class CosmosDBQuestionsLayer {
     private synchronized void init() {
         if( db != null)
             return;
-        db = client.getDatabase(AzureKeys.DB_NAME);
+        db = client.getDatabase(AzureProperties.DB_NAME);
         questions = db.getContainer("questions");
 
     }

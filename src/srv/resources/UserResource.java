@@ -1,5 +1,6 @@
 package srv.resources;
 
+import cache.UsersCache;
 import data.media.MediaDAO;
 import data.user.User;
 import data.user.UserDAO;
@@ -41,7 +42,7 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = udb.getUserById(user.getId()).iterator().hasNext();
+        boolean exists = UsersCache.getUserById(user.getId()).iterator().hasNext();
         if(exists) {
             Log.info("User already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -68,7 +69,7 @@ public class UserResource {
 
         Log.info("updateUser : " + id);
 
-        var results = udb.getUserById(id).iterator();
+        var results = UsersCache.getUserById(id).iterator();
         if(!results.hasNext()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -96,7 +97,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@PathParam("id") String id) {
-        var results = udb.getUserById(id).iterator();
+        var results = UsersCache.getUserById(id).iterator();
 
         if(!results.hasNext()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -117,7 +118,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response listHouses(@PathParam("id") String id) {
-        var results = udb.getUserById(id).iterator();
+        var results = UsersCache.getUserById(id).iterator();
 
         if(!results.hasNext()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

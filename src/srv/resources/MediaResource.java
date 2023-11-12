@@ -7,8 +7,7 @@ import com.azure.storage.blob.BlobContainerClientBuilder;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import utils.AzureKeys;
-import utils.Hash;
+import utils.AzureProperties;
 
 import java.util.UUID;
 
@@ -28,7 +27,7 @@ public class MediaResource
 	public String uploadImage(byte[] contents) {
 		String key = UUID.randomUUID().toString();;
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("images")
 				.buildClient();
 		BlobClient blob = containerClient.getBlobClient(key);
@@ -44,7 +43,7 @@ public class MediaResource
 	public String uploadVideo(String key, byte[] contents) {
 		//String key = Hash.of(contents);
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("videos")
 				.buildClient();
 		BlobClient blob = containerClient.getBlobClient(key);
@@ -64,7 +63,7 @@ public class MediaResource
 		//String key = Hash.of(contents);
 		//String id = key+"_text";
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("texts")
 				.buildClient();
 		BlobClient blob = containerClient.getBlobClient(key);
@@ -82,7 +81,7 @@ public class MediaResource
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public byte[] downloadText(@PathParam("id") String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("texts")
 				.buildClient();
 		// Get client to blob
@@ -101,7 +100,7 @@ public class MediaResource
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public byte[] downloadImage(@PathParam("id") String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("images")
 				.buildClient();
 		// Get client to blob
@@ -120,7 +119,7 @@ public class MediaResource
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public byte[] downloadVideo(@PathParam("id") String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName("videos")
 				.buildClient();
 		// Get client to blob
@@ -132,7 +131,7 @@ public class MediaResource
 
 	public void deleteFile(String containerName, String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName(containerName)
 				.buildClient();
 		containerClient.getBlobClient(id).delete();
@@ -140,7 +139,7 @@ public class MediaResource
 
 	public boolean fileExists(String containerName, String id) {
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
-				.connectionString(AzureKeys.STORAGE_CONNECTION_STRING)
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
 				.containerName(containerName)
 				.buildClient();
 		return containerClient.getBlobClient(id).exists();
