@@ -1,5 +1,7 @@
 package srv.resources;
 
+import cache.AuthCache;
+import cache.UsersCache;
 import data.authentication.Session;
 import data.media.MediaDAO;
 import data.user.Login;
@@ -17,6 +19,7 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import utils.MultiPartFormData;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -47,7 +50,7 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = udb.getUserById(user.getId()).iterator().hasNext();
+        boolean exists = UsersCache.getUserById(user.getId()).iterator().hasNext();
         if(exists) {
             Log.info("User already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -68,8 +71,8 @@ public class UserResource {
     public Response auth(Login user) {
         boolean pwdOk = false;
 
-        var results = udb.getUserById(user.getId()).iterator().next();
-        if (results.getPwd() == user.getPwd()){
+        var results = UsersCache.getUserById(user.getId()).iterator().next();
+        if (Objects.equals(results.getPwd(), user.getPwd())){
             pwdOk = true;
         }
 
@@ -83,7 +86,7 @@ public class UserResource {
                     .secure(false)
                     .httpOnly(true)
                     .build();
-            //RedisLayer.getInstance().putSession( new Session( uid, user.getUser())); //TO DO!!!!!
+            AuthCache.putSession( new Session( uid, user.getId() ));
             return Response.ok().cookie(cookie).build();
         } else
             throw new NotAuthorizedException("Incorrect login");
@@ -107,7 +110,7 @@ public class UserResource {
 
             Log.info("updateUser : " + id);
 
-            var results = udb.getUserById(id).iterator();
+            var results = UsersCache.getUserById(id).iterator();
             if(!results.hasNext()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
@@ -145,7 +148,7 @@ public class UserResource {
 
             auth.checkCookieUser(session, id);
 
-            var results = udb.getUserById(id).iterator();
+            var results = UsersCache.getUserById(id).iterator();
 
             if(!results.hasNext()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -176,7 +179,7 @@ public class UserResource {
 
             auth.checkCookieUser(session, id);
 
-            var results = udb.getUserById(id).iterator();
+            var results = UsersCache.getUserById(id).iterator();
 
             if(!results.hasNext()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);

@@ -12,7 +12,7 @@ public class RedisCache {
     private static JedisPool instance;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public synchronized static JedisPool getCachePool() {
+    private synchronized static JedisPool getCachePool() {
         if( instance != null)
             return instance;
         final JedisPoolConfig poolConfig = new JedisPoolConfig();
@@ -29,7 +29,7 @@ public class RedisCache {
 
     }
 
-    public static void writeToCache(String operation, String id, Object value) {
+    protected static void writeToCache(String operation, String id, Object value) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
             String jsonValue = mapper.writeValueAsString(value);
             String key = operation + ":" + id;
@@ -39,7 +39,20 @@ public class RedisCache {
         }
     }
 
-    public static <T> T readFromCache(String operation, String id, TypeReference<T> valueType) {
+    protected static <T> T readFromCache(String operation, String id, TypeReference<T> valueType) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String key = operation + ":" + id;
+            String jsonValue = jedis.get(key);
+            if (jsonValue != null) {
+                return mapper.readValue(jsonValue, valueType);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected static <T> T readFromCache(String operation, String id, Class<T> valueType) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
             String key = operation + ":" + id;
             String jsonValue = jedis.get(key);

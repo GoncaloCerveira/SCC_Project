@@ -1,5 +1,6 @@
 package data.authentication;
 
+import cache.AuthCache;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.core.Cookie;
 
@@ -13,8 +14,8 @@ public class AuthResource {
             throw new NotAuthorizedException("No session initialized");
         Session s;
         try {
-            s = RedisLayer.getInstance().getSession(session.getValue());
-        } catch (CacheException e) {
+            s = AuthCache.getSession(session.getValue());
+        } catch (Exception e) {
             throw new NotAuthorizedException("No valid session initialized");
         }
         if (s == null || s.getName() == null || s.getName().length() == 0)
