@@ -1,5 +1,6 @@
 package data.authentication;
 
+
 public class Session {
 
     private String id;
