@@ -9,9 +9,9 @@ import db.CosmosDBMediaLayer;
 import db.CosmosDBUsersLayer;
 
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import utils.MultiPartFormData;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -26,12 +26,18 @@ public class HouseResource {
 
     @POST
     @Path("/")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(House house, byte[] contents) {
+    public Response create(byte[] formData) {
+        MultiPartFormData<House> mpfd = new MultiPartFormData<>();
+        mpfd.extractItemMedia(formData, House.class);
+
+        House house = mpfd.getItem();
+        byte[] contents = mpfd.getMedia();
+
         Log.info("createHouse of : " + house.getOwnerId());
 
-        if(!house.validate() || contents == null) {
+        if(!house.validate() || contents.length == 0) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -45,8 +51,7 @@ public class HouseResource {
         String id = UUID.randomUUID().toString();
         house.setId(id);
 
-        String mediaId = UUID.randomUUID().toString();
-        media.uploadImage(mediaId, contents);
+        String mediaId = media.uploadImage(contents);
         mdb.postMedia(new MediaDAO(mediaId, house.getId()));
 
         hdb.postHouse(new HouseDAO(house));
@@ -56,9 +61,15 @@ public class HouseResource {
 
     @PATCH
     @Path("/{id}/update")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, House house, byte[] contents) {
+    public Response update(@PathParam("id") String id, byte[] formData) {
+        MultiPartFormData<House> mpfd = new MultiPartFormData<>();
+        mpfd.extractItemMedia(formData, House.class);
+
+        House house = mpfd.getItem();
+        byte[] contents = mpfd.getMedia();
+
         Log.info("updateHouse : " + id);
 
         if(house.getId() != null) {
@@ -80,9 +91,8 @@ public class HouseResource {
         if(house.getLocation() != null) {
             toUpdate.setLocation(house.getLocation());
         }
-        if(contents != null) {
-            String mediaId = UUID.randomUUID().toString();
-            media.uploadImage(mediaId, contents);
+        if(contents.length > 0) {
+            String mediaId = media.uploadImage(contents);
             mdb.postMedia(new MediaDAO(mediaId, id));
         }
 
@@ -107,7 +117,7 @@ public class HouseResource {
         HouseDAO house = hdb.getHouseById(id).iterator().next();
 
         for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
-            media.deleteFile("images", mediaDAO.getMediaId());
+            media.deleteFile("images", mediaDAO.getId());
         }
 
         hdb.delHouse(house);

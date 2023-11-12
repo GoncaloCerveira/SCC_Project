@@ -7,13 +7,17 @@ import com.azure.storage.blob.BlobContainerClientBuilder;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import utils.Hash;
+
+import java.util.UUID;
+
 /**
  * Resource for managing media files, such as images.
  */
 @Path("/media")
 public class MediaResource
 {
-	private final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=sccbgmproject1;AccountKey=9nW50uDsrT55AhZn5ZN5bk5P9NM3owOWu6Wr0aA2tnwRvvgEOBYKUyVstvogJNWd2NL3lBDrn1Or+AStsrPiBg==;EndpointSuffix=core.windows.net ";
+	private final String STORAGE_CONNECTION_STRING = "";
 
 	/**
 	 * Post a new image.The id of the image is its hash.
@@ -22,8 +26,8 @@ public class MediaResource
 	@Path("/image/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String uploadImage(String key, byte[] contents) {
-		//String key = Hash.of(contents);
+	public String uploadImage(byte[] contents) {
+		String key = UUID.randomUUID().toString();;
 		BlobContainerClient containerClient = new BlobContainerClientBuilder()
 				.connectionString(STORAGE_CONNECTION_STRING)
 				.containerName("images")

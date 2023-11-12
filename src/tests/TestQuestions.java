@@ -1,4 +1,4 @@
-package utils;
+package tests;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

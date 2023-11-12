@@ -36,11 +36,11 @@ import com.azure.cosmos.models.UniqueKeyPolicy;
 public class AzureManagement {
 	// TODO: These variable allow you to control what is being created
 	static final boolean CREATE_STORAGE = true;
-	static final boolean CREATE_COSMOSDB = false;
+	static final boolean CREATE_COSMOSDB = true;
 	static final boolean CREATE_REDIS = false;
 
 	// TODO: change your suffix and other names if you want
-	static final String MY_SUFFIX = "scc-60011-68881-68882"; // Add your suffix here
+	static final String MY_SUFFIX = "BGM"; // Add your suffix here
 	
 	static final String AZURE_COSMOSDB_NAME = "scc" + MY_SUFFIX;	// Cosmos DB account name
 	static final String AZURE_COSMOSDB_DATABASE = "sccproject1" + MY_SUFFIX;	// Cosmos DB database name
@@ -448,18 +448,16 @@ public class AzureManagement {
 							createCosmosDatabase(cosmosClient, AZURE_COSMOSDB_DATABASE);
 
 							//TODO: create the collections you have in your application
-							String[] uniqueKeys = new String[]{"/id"};
-
 							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "houses", "/location",
-									uniqueKeys);
+									null);
 							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "questions", "/ownerId",
-									uniqueKeys);
+									null);
 							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "rentals", "/houseId",
-									uniqueKeys);
+									null);
 							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "users", "/name",
-									uniqueKeys);
+									null);
 							createCosmosCollection(cosmosClient, AZURE_COSMOSDB_DATABASE, "media", "/itemId",
-									uniqueKeys);
+									null);
 
 							System.err.println("Azure Cosmos DB resources created with success");
 

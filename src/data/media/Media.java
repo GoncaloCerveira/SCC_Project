@@ -1,22 +1,22 @@
 package data.media;
 
 public class Media {
-    private String mediaId;
+    private String id;
     private String itemId;
 
     public Media() {}
 
-    public Media(String mediaId, String itemId) {
-        this.mediaId = mediaId;
+    public Media(String id, String itemId) {
+        this.id = id;
         this.itemId = itemId;
     }
 
-    public String getMediaId() {
-        return mediaId;
+    public String getId() {
+        return id;
     }
 
-    public void setMediaId(String mediaId) {
-        this.mediaId = mediaId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getItemId() {

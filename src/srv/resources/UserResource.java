@@ -11,8 +11,8 @@ import db.CosmosDBUsersLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import utils.MultiPartFormData;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 @Path("/user")
@@ -25,12 +25,18 @@ public class UserResource {
 
     @POST
     @Path("/")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(User user, byte[] contents) {
+    public Response create(byte[] formData) {
+        MultiPartFormData<User> mpfd = new MultiPartFormData<>();
+        mpfd.extractItemMedia(formData, User.class);
+
+        User user = mpfd.getItem();
+        byte[] contents = mpfd.getMedia();
+
         Log.info("createUser : " + user.getId());
 
-        if(!user.validate() || contents == null) {
+        if(!user.validate() || contents.length == 0) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -41,20 +47,25 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        String mediaId = UUID.randomUUID().toString();
-        media.uploadImage(mediaId, contents);
+        String mediaId = media.uploadImage(contents);
         mdb.postMedia(new MediaDAO(mediaId, user.getId()));
 
         udb.postUser(new UserDAO(user));
         Log.info("User created.");
-        return Response.ok().build();
+        return Response.ok(mediaId).build();
     }
 
     @PATCH
     @Path("/{id}/update")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, User user, byte[] contents) {
+    public Response update(@PathParam("id") String id, byte[] formData) {
+        MultiPartFormData<User> mpfd = new MultiPartFormData<>();
+        mpfd.extractItemMedia(formData, User.class);
+
+        User user = mpfd.getItem();
+        byte[] contents = mpfd.getMedia();
+
         Log.info("updateUser : " + id);
 
         var results = udb.getUserById(id).iterator();
@@ -70,9 +81,8 @@ public class UserResource {
         if(user.getPwd() != null) {
             toUpdate.setPwd(user.getPwd());
         }
-        if(contents != null) {
-            String mediaId = UUID.randomUUID().toString();
-            media.uploadImage(mediaId, contents);
+        if(contents.length > 0) {
+            String mediaId = media.uploadImage(contents);
             mdb.postMedia(new MediaDAO(mediaId, id));
         }
 
@@ -95,7 +105,7 @@ public class UserResource {
         UserDAO toDelete = results.next();
 
         for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
-            media.deleteFile("images", mediaDAO.getMediaId());
+            media.deleteFile("images", mediaDAO.getId());
         }
 
         udb.delUser(toDelete);

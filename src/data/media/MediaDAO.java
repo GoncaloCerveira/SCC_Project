@@ -1,18 +1,17 @@
 package data.media;
 
 import data.ObjectDAO;
-import data.house.House;
 
 public class MediaDAO extends Media implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-    public MediaDAO(Media m) {
-        super(m.getMediaId(), m.getItemId());
+    public MediaDAO(String id, String itemId) {
+        super(id, itemId);
     }
 
-    public MediaDAO(String mediaId, String itemId) {
-        super(mediaId, itemId);
+    public MediaDAO() {
+
     }
 
     @Override

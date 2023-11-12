@@ -6,9 +6,9 @@ import com.azure.cosmos.CosmosClientBuilder;
 import com.azure.cosmos.CosmosDatabase;
 
 public class CosmosDB {
-    private static final String CONNECTION_URL = "https://sccproject1.documents.azure.com:443/";
-    private static final String DB_KEY = "oHSKcUrbfonJWUhvlU1vF93pZX4Q3q9s2DYoGH4uD5LA0S6iFa94ZU5XfhtnovCZM7dx8sB03lnIACDbXX66dw==";
-    public static final String DB_NAME = "sccproject1";
+    public static final String CONNECTION_URL = "";
+    public static final String DB_KEY = "";
+    public static final String DB_NAME = "";
 
     public CosmosDB() {}
 
@@ -25,15 +25,5 @@ public class CosmosDB {
                 .buildClient();
     }
 
-    public static void createContainersIfNotExist() {
-        CosmosClient client = createClient();
-        CosmosDatabase db = client.getDatabase(DB_NAME);
-
-        db.createContainerIfNotExists("houses", "/location");
-        db.createContainerIfNotExists("questions", "/ownerId");
-        db.createContainerIfNotExists("rentals", "/houseId");
-        db.createContainerIfNotExists("users", "/name");
-        db.createContainerIfNotExists("media", "/itemId");
-    }
 
 }

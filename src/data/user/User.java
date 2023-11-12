@@ -7,7 +7,6 @@ public class User {
 	private String id;
 	private String name;
 	private String pwd;
-	private String photoId;
 
 	public User() {
 	}
@@ -20,7 +19,7 @@ public class User {
 	}
 
 	public boolean validate() {
-		return this.id != null && this.pwd!=null && this.name!=null && this.photoId!=null;
+		return this.id != null && this.pwd!=null && this.name!=null;
 	}
 
 	public String getId() {
@@ -45,14 +44,6 @@ public class User {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
-	}
-
-	public String getPhotoId() {
-		return photoId;
-	}
-
-	public void setPhotoId(String photoId) {
-		this.photoId = photoId;
 	}
 
 

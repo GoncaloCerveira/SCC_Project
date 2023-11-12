@@ -14,7 +14,6 @@ public class MainApplication extends Application
 	private Set<Class<?>> resources = new HashSet<Class<?>>();
 
 	public MainApplication() {
-		CosmosDB.createContainersIfNotExist();
 		resources.add(ControlResource.class);
 		resources.add(HouseResource.class);
 		resources.add(QuestionResource.class);
