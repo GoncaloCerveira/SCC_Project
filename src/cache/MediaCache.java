@@ -14,16 +14,12 @@ public class MediaCache extends RedisCache {
     public static List<MediaDAO> getMediaByItemId(String itemId) {
         List<MediaDAO> media = readFromCache("getMediaByItemId", itemId, new TypeReference<>() {});
 
-        CompletableFuture<List<MediaDAO>> asyncMediaDB = CompletableFuture.supplyAsync(() -> {
-            CosmosPagedIterable<MediaDAO> mediaDB = mdb.getMediaByItemId(itemId);
-            writeToCache("getMediaByItemId", itemId, mediaDB);
-            return mediaDB.stream().toList();
-        });
-
         if(media != null) {
             return media;
         }
+        CosmosPagedIterable<MediaDAO> mediaDB = mdb.getMediaByItemId(itemId);
+        writeToCache("getMediaByItemId", itemId, mediaDB);
 
-        return asyncMediaDB.join();
+        return mediaDB.stream().toList();
     }
 }

@@ -15,33 +15,25 @@ public class UsersCache extends RedisCache {
     public static List<UserDAO> getUserById(String id) {
         List<UserDAO> user = readFromCache("getUserById", id, new TypeReference<>() {});
 
-        CompletableFuture<List<UserDAO>> asyncUserDB = CompletableFuture.supplyAsync(() -> {
-            CosmosPagedIterable<UserDAO> userDB = udb.getUserById(id);
-            writeToCache("getUserById", id, userDB);
-            return userDB.stream().toList();
-        });
-
         if(user != null) {
             return user;
         }
 
-        return asyncUserDB.join();
+        CosmosPagedIterable<UserDAO> userDB = udb.getUserById(id);
+        writeToCache("getUserById", id, userDB);
+        return userDB.stream().toList();
     }
 
     public List<UserDAO> getUsers() {
         List<UserDAO> users = readFromCache("getUsers", "", new TypeReference<>() {});
 
-        CompletableFuture<List<UserDAO>> asyncUsersDB = CompletableFuture.supplyAsync(() -> {
-            CosmosPagedIterable<UserDAO> usersDB = udb.getUsers();
-            writeToCache("getUsers", "", usersDB);
-            return usersDB.stream().toList();
-        });
-
         if(users != null) {
             return users;
         }
 
-        return asyncUsersDB.join();
+        CosmosPagedIterable<UserDAO> usersDB = udb.getUsers();
+        writeToCache("getUsers", "", usersDB);
+        return usersDB.stream().toList();
     }
 
 
