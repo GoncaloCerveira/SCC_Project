@@ -34,6 +34,7 @@ public class RedisCache {
             String jsonValue = mapper.writeValueAsString(value);
             String key = operation + ":" + id;
             jedis.set(key, jsonValue);
+            jedis.expire(id, 60);
         } catch (Exception e) {
             e.printStackTrace();
         }
