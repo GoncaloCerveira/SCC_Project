@@ -1,5 +1,6 @@
 package srv.resources;
 
+import cache.QuestionsCache;
 import data.question.Question;
 import data.question.QuestionDAO;
 import db.CosmosDBQuestionsLayer;
@@ -32,7 +33,7 @@ public class QuestionResource {
         }
 
         String userId = question.getUserId();
-        boolean exists = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
+        boolean exists = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
         if(exists) {
             Log.info("Question already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -56,13 +57,13 @@ public class QuestionResource {
         }
 
         String userId = question.getUserId();
-        boolean exists = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
+        boolean exists = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).iterator().hasNext();
         if(!exists) {
             Log.info("Question does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        QuestionDAO toUpdate = qdb.getQuestionByHouseAndUser(houseId, userId).iterator().next();
+        QuestionDAO toUpdate = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).iterator().next();
         toUpdate.setReply(question.getReply());
 
         qdb.putQuestion(new QuestionDAO(toUpdate));
@@ -82,7 +83,7 @@ public class QuestionResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        Iterator<QuestionDAO> questions = qdb.getHouseQuestions(houseId).iterator();
+        Iterator<QuestionDAO> questions = QuestionsCache.getHouseQuestions(houseId).iterator();
         if(!questions.hasNext()) {
             Log.info("House does not exist or has no questions.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);

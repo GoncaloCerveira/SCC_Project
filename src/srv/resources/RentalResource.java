@@ -1,5 +1,6 @@
 package srv.resources;
 
+import cache.RentalsCache;
 import data.rental.Rental;
 import data.rental.RentalDAO;
 
@@ -33,12 +34,11 @@ public class RentalResource {
 
         int startDate = rental.getStartDate();
         int endDate = rental.getEndDate();
-        boolean exists = rdb.getHouseRentalByDate(houseId, startDate, endDate).iterator().hasNext();
+        boolean exists = RentalsCache.getHouseRentalByDate(houseId, startDate, endDate).iterator().hasNext();
         if(exists) {
             Log.info("House is already rented.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
-
 
         rental.setId(UUID.randomUUID().toString());
         rental.setHouseId(houseId);
@@ -60,7 +60,7 @@ public class RentalResource {
         }
 
         String id = rental.getId();
-        boolean exists = rdb.getRentalById(id).iterator().hasNext();
+        boolean exists = RentalsCache.getRentalById(id).iterator().hasNext();
         if(!exists) {
             Log.info("Rental does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
@@ -82,7 +82,7 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        Iterator<RentalDAO> rentals = rdb.getHouseRentals(houseId).iterator();
+        Iterator<RentalDAO> rentals = RentalsCache.getHouseRentals(houseId).iterator();
         if(!rentals.hasNext()) {
             Log.info("House does not exist or has no rentals.");
             throw new WebApplicationException(Response.Status.CONFLICT);

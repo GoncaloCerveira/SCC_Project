@@ -1,14 +1,16 @@
 package srv.resources;
 
 import cache.AuthCache;
+import cache.HousesCache;
+import cache.MediaCache;
 import cache.UsersCache;
+import data.authentication.AuthResource;
 import data.authentication.Session;
 import data.media.MediaDAO;
 import data.user.Login;
 import data.user.User;
 import data.user.UserDAO;
 
-import db.CosmosDBHousesLayer;
 import db.CosmosDBMediaLayer;
 import db.CosmosDBUsersLayer;
 
@@ -26,10 +28,9 @@ import java.util.logging.Logger;
 @Path("/user")
 public class UserResource {
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
-    private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
     private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
     private final MediaResource media = new MediaResource();
-    private data.authentication.AuthResource auth;
+    private final data.authentication.AuthResource auth = new AuthResource();
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
@@ -156,7 +157,7 @@ public class UserResource {
 
             UserDAO toDelete = results.next();
 
-            for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
+            for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
                 media.deleteFile("images", mediaDAO.getId());
             }
 
@@ -185,7 +186,7 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            return Response.ok(hdb.getUserHouses(id)).build();
+            return Response.ok(HousesCache.getUserHouses(id)).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {

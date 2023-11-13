@@ -87,6 +87,7 @@ public class CosmosDBHousesLayer {
 
 	public CosmosPagedIterable<HouseDAO> getHousesByLocationForPeriod(String location, String startDate, String endDate) {
 		init();
+		// TODO
 		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 

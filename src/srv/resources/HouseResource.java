@@ -1,5 +1,8 @@
 package srv.resources;
 
+import cache.HousesCache;
+import cache.MediaCache;
+import cache.UsersCache;
 import data.house.House;
 import data.house.HouseDAO;
 
@@ -19,7 +22,6 @@ import java.util.logging.Logger;
 @Path("/house")
 public class HouseResource {
     private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
-    private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
     private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
     private final MediaResource media = new MediaResource();
     private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
@@ -42,7 +44,7 @@ public class HouseResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = udb.getUserById(house.getOwnerId()).iterator().hasNext();
+        boolean exists = UsersCache.getUserById(house.getOwnerId()).iterator().hasNext();
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -77,13 +79,13 @@ public class HouseResource {
                 Log.info("House ID cannot be modified.");
         }
 
-        boolean exists = udb.getUserById(house.getOwnerId()).iterator().hasNext();
+        boolean exists = UsersCache.getUserById(house.getOwnerId()).iterator().hasNext();
         if(!exists) {
             Log.info("A user with the given id does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        HouseDAO toUpdate = hdb.getHouseById(id).iterator().next();
+        HouseDAO toUpdate = HousesCache.getHouseById(id).iterator().next();
 
         if(house.getOwnerId() != null) {
             toUpdate.setOwnerId(house.getOwnerId());
@@ -108,15 +110,15 @@ public class HouseResource {
     public Response delete(@PathParam("id") String id) {
         Log.info("deleteHouse: " + id);
 
-        boolean exists = hdb.getHouseById(id).iterator().hasNext();
+        boolean exists = HousesCache.getHouseById(id).iterator().hasNext();
         if(!exists) {
             Log.info("A house with the given id does not exist.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        HouseDAO house = hdb.getHouseById(id).iterator().next();
+        HouseDAO house = HousesCache.getHouseById(id).iterator().next();
 
-        for (MediaDAO mediaDAO : mdb.getMediaByItemId(id)) {
+        for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
             media.deleteFile("images", mediaDAO.getId());
         }
 
@@ -132,7 +134,7 @@ public class HouseResource {
     public Response listLocation(@PathParam("location") String location) {
         Log.info("listLocation: " + location);
 
-        return Response.ok(hdb.getHousesByLocation(location)).build();
+        return Response.ok(HousesCache.getHousesByLocation(location)).build();
     }
 
 
