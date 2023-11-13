@@ -20,7 +20,9 @@ public class UsersCache extends RedisCache {
         }
 
         CosmosPagedIterable<UserDAO> userDB = udb.getUserById(id);
-        writeToCache("getUserById", id, userDB);
+        if(userDB.iterator().hasNext()) {
+            writeToCache("getUserById", id, userDB);
+        }
         return userDB.stream().toList();
     }
 
@@ -32,7 +34,9 @@ public class UsersCache extends RedisCache {
         }
 
         CosmosPagedIterable<UserDAO> usersDB = udb.getUsers();
-        writeToCache("getUsers", "", usersDB);
+        if(usersDB.iterator().hasNext()) {
+            writeToCache("getUsers", "", usersDB);
+        }
         return usersDB.stream().toList();
     }
 

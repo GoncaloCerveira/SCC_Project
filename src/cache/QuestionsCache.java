@@ -19,7 +19,9 @@ public class QuestionsCache extends RedisCache {
         }
 
         CosmosPagedIterable<QuestionDAO> questionDB = qdb.getQuestionById(id);
-        writeToCache("getQuestionById", id, questionDB);
+        if(questionDB.iterator().hasNext()) {
+            writeToCache("getQuestionById", id, questionDB);
+        }
 
         return questionDB.stream().toList();
     }
@@ -33,7 +35,9 @@ public class QuestionsCache extends RedisCache {
         }
 
         CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestionByHouseAndUser(houseId, userId);
-        writeToCache("getQuestionByHouseAndUser", id, questionsDB);
+        if(questionsDB.iterator().hasNext()) {
+            writeToCache("getQuestionByHouseAndUser", id, questionsDB);
+        }
 
         return questionsDB.stream().toList();
     }
@@ -41,13 +45,14 @@ public class QuestionsCache extends RedisCache {
     public static List<QuestionDAO> getQuestions() {
         List<QuestionDAO> questions = readFromCache("getQuestions", "", new TypeReference<>() {});
 
-
         if(questions != null) {
             return questions;
         }
 
         CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestions();
-        writeToCache("getQuestions", "", questionsDB);
+        if(questionsDB.iterator().hasNext()) {
+            writeToCache("getQuestionById", "", questionsDB);
+        }
 
         return questionsDB.stream().toList();
     }
@@ -61,6 +66,10 @@ public class QuestionsCache extends RedisCache {
 
         CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestions(houseId);
         writeToCache("getHouseQuestions", houseId, questionsDB);
+        if(questionsDB.iterator().hasNext()) {
+            writeToCache("getHouseQuestions", houseId, questionsDB);
+        }
+
         return questionsDB.stream().toList();
     }
 

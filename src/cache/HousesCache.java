@@ -20,7 +20,9 @@ public class HousesCache extends AuthCache{
         }
 
         CosmosPagedIterable<HouseDAO> houseDB = hdb.getHouseById(id);
-        writeToCache("getHouseById", id, houseDB);
+        if(houseDB.iterator().hasNext()) {
+            writeToCache("getHouseById", id, houseDB);
+        }
 
         return houseDB.stream().toList();
     }
@@ -33,7 +35,9 @@ public class HousesCache extends AuthCache{
         }
 
         CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouses();
-        writeToCache("getHouses", "", housesDB);
+        if(housesDB.iterator().hasNext()) {
+            writeToCache("getHouses", "", housesDB);
+        }
 
         return housesDB.stream().toList();
     }
@@ -46,7 +50,9 @@ public class HousesCache extends AuthCache{
         }
 
         CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouses();
-        writeToCache("getUserHouses", ownerId, housesDB);
+        if(housesDB.iterator().hasNext()) {
+            writeToCache("getUserHouses", ownerId, housesDB);
+        }
 
         return housesDB.stream().toList();
     }
@@ -59,7 +65,9 @@ public class HousesCache extends AuthCache{
         }
 
         CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouses();
-        writeToCache("getHousesByLocation", location, housesDB);
+        if(housesDB.iterator().hasNext()) {
+            writeToCache("getHousesByLocation", location, housesDB);
+        }
 
         return housesDB.stream().toList();
     }

@@ -19,7 +19,9 @@ public class RentalsCache extends RedisCache {
         }
 
         CosmosPagedIterable<RentalDAO> rentalDB = rdb.getRentalById(id);
-        writeToCache("getRentalById", id, rentalDB);
+        if(rentalDB.iterator().hasNext()) {
+            writeToCache("getQuestionById", id, rentalDB);
+        }
         return rentalDB.stream().toList();
     }
 
@@ -32,7 +34,9 @@ public class RentalsCache extends RedisCache {
         }
 
         CosmosPagedIterable<RentalDAO> rentalDB = rdb.getHouseRentalByDate(houseId, startDate, endDate);
-        writeToCache("getHouseRentalByDate", id, rentalDB);
+        if(rentalDB.iterator().hasNext()) {
+            writeToCache("getHouseRentalByDate", id, rentalDB);
+        }
         return rentalDB.stream().toList();
     }
 
@@ -44,7 +48,9 @@ public class RentalsCache extends RedisCache {
         }
 
         CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getRentals();
-        writeToCache("getRentals", "", rentalsDB);
+        if(rentalsDB.iterator().hasNext()) {
+            writeToCache("getRentals", "", rentalsDB);
+        }
         return rentalsDB.stream().toList();
     }
 
@@ -56,7 +62,9 @@ public class RentalsCache extends RedisCache {
         }
 
         CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getHouseRentals(houseId);
-        writeToCache("getHouseRentals", houseId, rentalsDB);
+        if(rentalsDB.iterator().hasNext()) {
+            writeToCache("getHouseRentals", houseId, rentalsDB);
+        }
         return rentalsDB.stream().toList();
     }
 

@@ -18,7 +18,9 @@ public class MediaCache extends RedisCache {
             return media;
         }
         CosmosPagedIterable<MediaDAO> mediaDB = mdb.getMediaByItemId(itemId);
-        writeToCache("getMediaByItemId", itemId, mediaDB);
+        if(mediaDB.iterator().hasNext()) {
+            writeToCache("getMediaByItemId", itemId, mediaDB);
+        }
 
         return mediaDB.stream().toList();
     }
