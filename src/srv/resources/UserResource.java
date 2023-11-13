@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import utils.MultiPartFormData;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -51,8 +52,8 @@ public class UserResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        boolean exists = UsersCache.getUserById(user.getId()).iterator().hasNext();
-        if(exists) {
+        boolean empty = UsersCache.getUserById(user.getId()).isEmpty();
+        if(!empty) {
             Log.info("User already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
@@ -111,12 +112,12 @@ public class UserResource {
 
             Log.info("updateUser : " + id);
 
-            var results = UsersCache.getUserById(id).iterator();
-            if(!results.hasNext()) {
+            List<UserDAO> results = UsersCache.getUserById(id);
+            if(results.isEmpty()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            UserDAO toUpdate = results.next();
+            UserDAO toUpdate = results.get(0);
 
             if(user.getName() != null) {
                 toUpdate.setName(user.getName());
@@ -149,13 +150,13 @@ public class UserResource {
 
             auth.checkCookieUser(session, id);
 
-            var results = UsersCache.getUserById(id).iterator();
+            List<UserDAO> results = UsersCache.getUserById(id);
 
-            if(!results.hasNext()) {
+            if(results.isEmpty()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            UserDAO toDelete = results.next();
+            UserDAO toDelete = results.get(0);
 
             for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
                 media.deleteFile("images", mediaDAO.getId());
@@ -180,9 +181,9 @@ public class UserResource {
 
             auth.checkCookieUser(session, id);
 
-            var results = UsersCache.getUserById(id).iterator();
+            List<UserDAO> results = UsersCache.getUserById(id);
 
-            if(!results.hasNext()) {
+            if(results.isEmpty()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 

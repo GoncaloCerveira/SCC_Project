@@ -5,6 +5,8 @@ public class Login {
     private String id;
     private String pwd;
 
+    public Login() {}
+
     public Login(String id, String pwd) {
         super();
         this.id = id;

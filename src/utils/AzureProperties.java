@@ -11,8 +11,8 @@ public class AzureProperties {
     public static String DB_KEY = "";
     public static String DB_NAME = "";
     public static String STORAGE_CONNECTION_STRING = "";
-    public static String CACHE_HOSTNAME = "";
-    public static String CACHE_KEY = "";
+    public static String CACHE_HOSTNAME = "rediswesteurope68881.redis.cache.windows.net";
+    public static String CACHE_KEY = "VtDyZorArQ0rbLFB43uconCp5blgLF1L1AzCaDJUCP8=";
 
     public AzureProperties() {}
 
