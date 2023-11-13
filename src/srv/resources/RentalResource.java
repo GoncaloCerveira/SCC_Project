@@ -1,7 +1,13 @@
 package srv.resources;
 
+import cache.AuthCache;
+import cache.HousesCache;
+import cache.QuestionsCache;
 import cache.RentalsCache;
 import data.authentication.AuthResource;
+import data.house.HouseDAO;
+import data.media.MediaDAO;
+import data.question.QuestionDAO;
 import data.rental.Rental;
 import data.rental.RentalDAO;
 
@@ -29,11 +35,10 @@ public class RentalResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId, Rental rental) {
-
         try {
             Log.info("createRental from: " + rental.getUserId() + " for: " + houseId);
 
-            auth.checkCookieUser(session, rental.getUserId());
+            String userId = auth.getUserId(session);
 
             if (!rental.validateCreate()) {
                 Log.info("Null information was given");
@@ -50,6 +55,7 @@ public class RentalResource {
 
             rental.setId(UUID.randomUUID().toString());
             rental.setHouseId(houseId);
+            rental.setUserId(userId);
 
             rdb.postRental(new RentalDAO(rental));
             Log.info("Rental created.");
@@ -59,29 +65,40 @@ public class RentalResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @PATCH
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId, Rental rental) {
-
+    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId,
+                           @QueryParam("rid") String rentalId, Rental rental) {
         try {
-            Log.info("updateRental from: " + rental.getUserId() + " for: " + houseId);
+            List<RentalDAO> results = RentalsCache.getRentalById(rentalId);
+            if (results.isEmpty()) {
+                Log.info("Rental does not exist.");
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
 
+            RentalDAO rentalDB = results.get(0);
             auth.checkCookieUser(session, rental.getUserId());
 
-            if (!rental.validateUpdate()) {
-                Log.info("Null information was given");
+            Log.info("updateRental from: " + rentalDB.getUserId() + " for: " + houseId);
+
+            int startDate = rental.getStartDate();
+            int endDate = rental.getEndDate();
+
+            if(startDate > endDate) {
+                Log.info("Invalid dates.");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            String id = rental.getId();
-            boolean empty = RentalsCache.getRentalById(id).isEmpty();
-            if (!empty) {
-                Log.info("Rental does not exist.");
-                throw new WebApplicationException(Response.Status.CONFLICT);
+            if(startDate != 0 && rentalDB.validateStartDate(startDate)) {
+                rentalDB.setStartDate(startDate);
+            }
+            if(endDate != 0 && rentalDB.validateEndDate(endDate)) {
+                rentalDB.setEndDate(endDate);
             }
 
             rdb.putRental(new RentalDAO(rental));
@@ -92,26 +109,26 @@ public class RentalResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @GET
     @Path("/list")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@PathParam("id") String houseId, Rental rental) {
+    public Response list(@PathParam("id") String houseId) {
         Log.info("listRentals for: " + houseId);
-        if(houseId == null) {
-            Log.info("Null information was given");
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+
+        List<HouseDAO> results = HousesCache.getHouseById(houseId);
+        if (results.isEmpty()) {
+            Log.info("House does not exist.");
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
         List<RentalDAO> rentals = RentalsCache.getHouseRentals(houseId);
-        if(rentals.isEmpty()) {
-            Log.info("House does not exist or has no rentals.");
-            throw new WebApplicationException(Response.Status.CONFLICT);
-        }
-
         Log.info("Rentals retrieved.");
         return Response.ok(rentals).build();
     }
+
+
 }

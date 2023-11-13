@@ -18,8 +18,8 @@ public class User {
 		this.pwd = pwd;
 	}
 
-	public boolean validate() {
-		return this.id != null && this.pwd!=null && this.name!=null;
+	public boolean validateCreate() {
+		return this.id != null && this.name!=null && this.pwd!=null;
 	}
 
 	public String getId() {

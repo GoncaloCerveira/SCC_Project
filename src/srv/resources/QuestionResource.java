@@ -1,9 +1,13 @@
 package srv.resources;
 
+import cache.AuthCache;
+import cache.HousesCache;
 import cache.QuestionsCache;
 import data.authentication.AuthResource;
+import data.house.HouseDAO;
 import data.question.Question;
 import data.question.QuestionDAO;
+import db.CosmosDBHousesLayer;
 import db.CosmosDBQuestionsLayer;
 
 import jakarta.ws.rs.*;
@@ -28,23 +32,24 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId, Question question) {
-
         try {
             Log.info("createQuestion from: " + question.getUserId() + " for: " + houseId);
 
-            auth.checkCookieUser(session, question.getUserId());
+            String userId = auth.getUserId(session);
 
             if (!question.validateCreate()) {
                 Log.info("Null information was given");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            String userId = question.getUserId();
             boolean empty = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).isEmpty();
             if (!empty) {
                 Log.info("Question already exists.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
+
+            question.setUserId(userId);
+            question.setReply(null);
 
             qdb.postQuestion(new QuestionDAO(question));
             Log.info("Question created.");
@@ -54,35 +59,39 @@ public class QuestionResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @PATCH
     @Path("/reply")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response reply(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId, Question question) {
-
+    public Response reply(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId,
+                          @QueryParam("qid") String questionId, Question question) {
         try {
-            Log.info("replyQuestion from: " + question.getUserId() + " for: " + houseId);
+            List<QuestionDAO> results = QuestionsCache.getQuestionById(questionId);
+            if (results.isEmpty()) {
+                Log.info("Question does not exist.");
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+
+            QuestionDAO questionDB = results.get(0);
+            auth.checkCookieUser(session, questionDB.getOwnerId());
+
+            Log.info("replyQuestion from: " + questionDB.getOwnerId() + " for: " + houseId);
 
             if (!question.validateReply()) {
                 Log.info("Null information was given");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
-
-            String userId = question.getUserId();
-            boolean empty = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).isEmpty();
-            if (empty) {
-                Log.info("Question does not exist.");
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            if(questionDB.getReply() != null) {
+                Log.info("Question already replied");
+                throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
-            auth.checkCookieUser(session, question.getOwnerId());
+            questionDB.setReply(question.getReply());
 
-            QuestionDAO toUpdate = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).get(0);
-            toUpdate.setReply(question.getReply());
-
-            qdb.putQuestion(new QuestionDAO(toUpdate));
+            qdb.putQuestion(new QuestionDAO(questionDB));
             Log.info("Question replied.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
@@ -90,6 +99,7 @@ public class QuestionResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @GET
@@ -97,23 +107,19 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId) {
-
         try {
             Log.info("listQuestions for: " + houseId);
 
-            // TODO Get house ownerID
-
-            if (houseId == null) {
-                Log.info("Null information was given");
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
-            }
-
-            List<QuestionDAO> questions = QuestionsCache.getHouseQuestions(houseId);
-            if (questions.isEmpty()) {
-                Log.info("House does not exist or has no questions.");
+            List<HouseDAO> results = HousesCache.getHouseById(houseId);
+            if (results.isEmpty()) {
+                Log.info("House does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
+            String ownerId = results.get(0).getOwnerId();
+            auth.checkCookieUser(session, ownerId);
+
+            List<QuestionDAO> questions = QuestionsCache.getHouseQuestions(houseId);
             Log.info("Questions retrieved.");
             return Response.ok(questions).build();
         } catch (WebApplicationException e) {
@@ -121,6 +127,7 @@ public class QuestionResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
 

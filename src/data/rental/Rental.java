@@ -23,11 +23,15 @@ public class Rental {
     }
 
     public boolean validateCreate() {
-        return this.userId != null && this.startDate != 0 && this.endDate != 0 && this.price != 0;
+        return this.id != null && this.startDate != 0 && this.endDate != 0 && this.price != 0 && this.startDate <= this.endDate;
     }
 
-    public boolean validateUpdate() {
-        return validateCreate() && this.id != null;
+    public boolean validateStartDate(int startDate) {
+        return startDate <= this.endDate;
+    }
+
+    public boolean validateEndDate(int endDate) {
+        return endDate >= this.startDate;
     }
 
     public String getId() {

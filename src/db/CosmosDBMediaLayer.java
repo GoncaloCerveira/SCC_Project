@@ -4,10 +4,13 @@ import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
 import com.azure.cosmos.implementation.NotFoundException;
+import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.media.MediaDAO;
+import data.user.UserDAO;
 import utils.AzureProperties;
 
 public class CosmosDBMediaLayer {
@@ -39,6 +42,10 @@ public class CosmosDBMediaLayer {
 
     }
 
+    public CosmosItemResponse<Object> delMedia(MediaDAO m) {
+        init();
+        return media.deleteItem(m, new CosmosItemRequestOptions());
+    }
     public CosmosItemResponse<MediaDAO> postMedia(MediaDAO m) {
         init();
         CosmosItemResponse<MediaDAO> res = media.createItem(m);

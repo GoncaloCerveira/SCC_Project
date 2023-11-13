@@ -2,7 +2,9 @@ package data.authentication;
 
 import cache.AuthCache;
 import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Response;
 
 public class AuthResource {
     /**
@@ -23,5 +25,16 @@ public class AuthResource {
         if (!s.getName().equals(id) /*&& !s.getName().equals("admin")*/)
             throw new NotAuthorizedException("Invalid user : " + s.getName());
         return s;
+    }
+
+    public String getUserId(Cookie session) {
+        if(session == null) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+        String userId = AuthCache.getSession(session.getValue()).getName();
+        if(userId == null) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+        return userId;
     }
 }

@@ -23,11 +23,11 @@ public class Question {
     }
 
     public boolean validateCreate() {
-        return this.userId != null && this.ownerId != null && this.question != null;
+        return this.id != null && this.houseId != null && this.ownerId != null && this.question != null;
     }
 
     public boolean validateReply() {
-        return validateCreate() & this.reply != null;
+        return this.reply != null;
     }
 
     public String getId() {

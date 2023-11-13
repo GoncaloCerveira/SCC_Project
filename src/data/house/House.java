@@ -18,8 +18,8 @@ public class House {
         this.ownerId = ownerId;
     }
 
-    public boolean validate() {
-        return this.location!=null && this.ownerId !=null;
+    public boolean createValidate() {
+        return this.name!=null && this.location!=null && this.ownerId !=null;
     }
 
     public String getId() {

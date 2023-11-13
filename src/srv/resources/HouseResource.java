@@ -34,25 +34,25 @@ public class HouseResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, byte[] formData) {
-
         try {
-
             MultiPartFormData<House> mpfd = new MultiPartFormData<>();
             mpfd.extractItemMedia(formData, House.class);
 
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
-            auth.checkCookieUser(session, house.getOwnerId());
+            String ownerId = house.getOwnerId();
 
-            Log.info("createHouse of : " + house.getOwnerId());
+            auth.checkCookieUser(session, ownerId);
 
-            if (!house.validate() || contents.length == 0) {
+            Log.info("createHouse of : " + ownerId);
+
+            if (!house.createValidate() || contents.length == 0) {
                 Log.info("Null information was given");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            boolean empty = UsersCache.getUserById(house.getOwnerId()).isEmpty();
+            boolean empty = UsersCache.getUserById(ownerId).isEmpty();
             if (empty) {
                 Log.info("A user with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -72,6 +72,7 @@ public class HouseResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @PATCH
@@ -79,44 +80,49 @@ public class HouseResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, byte[] formData) {
-
         try {
-
             MultiPartFormData<House> mpfd = new MultiPartFormData<>();
             mpfd.extractItemMedia(formData, House.class);
 
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
-            auth.checkCookieUser(session, house.getOwnerId());
-
             Log.info("updateHouse : " + id);
 
-            if (house.getId() != null) {
-                if (!house.getId().equals(id))
-                    Log.info("House ID cannot be modified.");
+            List<HouseDAO> results = HousesCache.getHouseById(id);
+            if(results.isEmpty()) {
+                Log.info("A house with the given id does not exist.");
+                throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
-            boolean empty = UsersCache.getUserById(house.getOwnerId()).isEmpty();
+            HouseDAO houseDB = results.get(0);
+            auth.checkCookieUser(session, houseDB.getOwnerId());
+
+            String ownerId = house.getOwnerId();
+            boolean empty = UsersCache.getUserById(ownerId).isEmpty();
             if (empty) {
                 Log.info("A user with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
-            HouseDAO toUpdate = HousesCache.getHouseById(id).get(0);
+            String name = house.getName();
+            String location = house.getLocation();
 
-            if (house.getOwnerId() != null) {
-                toUpdate.setOwnerId(house.getOwnerId());
+            if (name!= null) {
+                houseDB.setName(name);
             }
-            if (house.getLocation() != null) {
-                toUpdate.setLocation(house.getLocation());
+            if (location != null) {
+                houseDB.setLocation(location);
+            }
+            if (ownerId != null) {
+                houseDB.setOwnerId(ownerId);
             }
             if (contents.length > 0) {
                 String mediaId = media.uploadImage(contents);
                 mdb.postMedia(new MediaDAO(mediaId, id));
             }
 
-            hdb.putHouse(toUpdate);
+            hdb.putHouse(houseDB);
             Log.info("House updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
@@ -124,6 +130,7 @@ public class HouseResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @DELETE
@@ -131,7 +138,6 @@ public class HouseResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
-
         try {
             Log.info("deleteHouse: " + id);
 
@@ -157,6 +163,7 @@ public class HouseResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @GET

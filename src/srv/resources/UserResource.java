@@ -35,6 +35,37 @@ public class UserResource {
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
+    @Path("/auth")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response auth(Login login) {
+        boolean pwdOk = false;
+        String id = login.getId();
+
+        UserDAO user = UsersCache.getUserById(id).get(0);
+        if (Objects.equals(login.getPwd(), user.getPwd())){
+            pwdOk = true;
+        }
+
+        if( pwdOk) {
+            String uid = UUID.randomUUID().toString();
+            NewCookie cookie = new NewCookie.Builder("scc:session")
+                    .value(uid)
+                    .path("/")
+                    .comment("sessionid")
+                    .maxAge(3600)
+                    .secure(false)
+                    .httpOnly(true)
+                    .build();
+            AuthCache.putSession(new Session(uid,id));
+            return Response.ok().cookie(cookie).build();
+        } else {
+            throw new NotAuthorizedException("Incorrect login");
+        }
+
+    }
+
+    @POST
     @Path("/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +78,7 @@ public class UserResource {
 
         Log.info("createUser : " + user.getId());
 
-        if(!user.validate() || contents.length == 0) {
+        if(!user.validateCreate() || contents.length == 0) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -66,42 +97,12 @@ public class UserResource {
         return Response.ok(mediaId).build();
     }
 
-    @POST
-    @Path("/auth")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response auth(Login user) {
-        boolean pwdOk = false;
-
-        var results = UsersCache.getUserById(user.getId()).iterator().next();
-        if (Objects.equals(results.getPwd(), user.getPwd())){
-            pwdOk = true;
-        }
-
-        if( pwdOk) {
-            String uid = UUID.randomUUID().toString();
-            NewCookie cookie = new NewCookie.Builder("scc:session")
-                    .value(uid)
-                    .path("/")
-                    .comment("sessionid")
-                    .maxAge(3600)
-                    .secure(false)
-                    .httpOnly(true)
-                    .build();
-            AuthCache.putSession( new Session( uid, user.getId() ));
-            return Response.ok().cookie(cookie).build();
-        } else
-            throw new NotAuthorizedException("Incorrect login");
-    }
-
     @PATCH
     @Path("/{id}/update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, byte[] formData) {
-
         try{
-
             auth.checkCookieUser(session, id);
 
             MultiPartFormData<User> mpfd = new MultiPartFormData<>();
@@ -117,20 +118,22 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            UserDAO toUpdate = results.get(0);
+            UserDAO userDB = results.get(0);
+            String name = user.getName();
+            String pwd = user.getPwd();
 
-            if(user.getName() != null) {
-                toUpdate.setName(user.getName());
+            if(name != null) {
+                userDB.setName(name);
             }
-            if(user.getPwd() != null) {
-                toUpdate.setPwd(user.getPwd());
+            if(pwd != null) {
+                userDB.setPwd(pwd);
             }
             if(contents.length > 0) {
                 String mediaId = media.uploadImage(contents);
                 mdb.postMedia(new MediaDAO(mediaId, id));
             }
 
-            udb.putUser(toUpdate);
+            udb.putUser(userDB);
             Log.info("User updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
@@ -138,6 +141,7 @@ public class UserResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @DELETE
@@ -145,30 +149,29 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
-
         try{
-
             auth.checkCookieUser(session, id);
 
             List<UserDAO> results = UsersCache.getUserById(id);
-
             if(results.isEmpty()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            UserDAO toDelete = results.get(0);
+            UserDAO userDB = results.get(0);
 
             for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
                 media.deleteFile("images", mediaDAO.getId());
+                mdb.delMedia(mediaDAO);
             }
 
-            udb.delUser(toDelete);
+            udb.delUser(userDB);
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @GET
@@ -176,13 +179,10 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response listHouses(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
-
         try{
-
             auth.checkCookieUser(session, id);
 
             List<UserDAO> results = UsersCache.getUserById(id);
-
             if(results.isEmpty()) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
@@ -193,6 +193,7 @@ public class UserResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
 
