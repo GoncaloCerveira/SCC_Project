@@ -60,7 +60,7 @@ public class CosmosDBUsersLayer {
 
 	public CosmosItemResponse<UserDAO> putUser(UserDAO user) {
 		init();
-		CosmosItemResponse<UserDAO> res = users.replaceItem(user, user.getId(), new PartitionKey(user.getName()), new CosmosItemRequestOptions());
+		CosmosItemResponse<UserDAO> res = users.replaceItem(user, user.getId(), new PartitionKey(user.getId()), new CosmosItemRequestOptions());
 		if(res.getStatusCode() < 300)
 			return res;
 		else throw new NotFoundException();
