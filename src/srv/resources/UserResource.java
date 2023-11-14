@@ -94,7 +94,7 @@ public class UserResource {
 
         udb.postUser(new UserDAO(user));
         Log.info("User created.");
-        return Response.ok(mediaId).build();
+        return Response.ok(user).build();
     }
 
     @PATCH

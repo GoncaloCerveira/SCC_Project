@@ -1,5 +1,5 @@
 config:
-  target: 'https://scc24appnortheurope4204.azurewebsites.net/rest'
+  target: 'https://scc24appwesteurope68881.azurewebsites.net/rest'
   plugins:
     metrics-by-endpoint:
       useOnlyRequestNames: true
@@ -18,36 +18,27 @@ scenarios:
       - loop:                            # let's create 950 users - loop ... count
         - function: "genNewUser"         # Generate the needed information for the user
         - post:
+            beforeRequest: "uploadImageBody"
             url: "/user"
             headers:
-              Content-Type: multipart/form-data"
+              Content-Type: multipart/form-data
               Accept: application/json
-            beforeRequest: "uploadImageBody"
             formData:
-              - name: "user"
-                type: "text"
-                value: '{"id": "{{ userid }}", "name": "{{ name }}", "pwd": "{{ pwd }}"}'
-              - name: "image"
-                type: "file"
-                file: ""
+              user: '{"id":"{{ userid }}","name":"{{ name }}","pwd":"{{ pwd }}"}'
+              image: "{{ image }}"
             afterResponse: "genNewUserReply"    # capture result and store in file
         count: 250
       - loop:                            # let's create 50 users - loop ... count
-        - post:                          # First: post image for the user
         - function: "genNewUser"         # Generate the needed information for the user
         - post:
+            beforeRequest: "uploadImageBody"
             url: "/user"
             headers:
-              Content-Type: multipart/form-data"
+              Content-Type: multipart/form-data
               Accept: application/json
-            beforeRequest: "uploadImageBody"
             formData:
-              - name: "user"
-                type: "text"
-                value: '{"id": "{{ userid }}", "name": "{{ name }}", "pwd": "{{ pwd }}"}'
-              - name: "image"
-                type: "file"
-                file: ""
+              user: '{"id":"{{ userid }}","name":"{{ name }}","pwd":"{{ pwd }}"}'
+              image: "{{ image }}"
             afterResponse: "genNewUserReply"    # capture result and store in file
         - post:
             url: "/user/auth"
@@ -57,21 +48,18 @@ scenarios:
               user: "{{ userid }}"
               pwd: "{{ pwd }}"
         - loop:                            # let's create 50 users - loop ... count
-          - function: "genNewHouse"         # Generate the needed information for the user
+          - post:                          # First: post image for the house
+          - function: "genNewHouse"         # Generate the needed information for the house
           - post:
+              beforeRequest: "uploadImageBody"
               url: "/house"
               headers:
-                Content-Type: multipart/form-data"
+                Content-Type: multipart/form-data
                 Accept: application/json
-              beforeRequest: "uploadImageBody"
               formData:
-                - name: "user"
-                  type: "text"
-                  value: '{"name": "{{ name }}", "location": "{{ location }}", "description": "{{ description }}", "owner": "{{ userid }}"}'
-                - name: "image"
-                  type: "file"
-                  file: ""
-              capture:
+                house: '{"name":"{{ name }}","location":"{{ location }}","ownerId":"{{ userid }}"}'
+                image: "{{ image }}"
+              capture: 
                 json: "$.id"
                 as: "houseid"              # capture the house id to be used in house creation
           - post:                          # make this house available

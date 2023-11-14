@@ -66,7 +66,7 @@ public class HouseResource {
 
             hdb.postHouse(new HouseDAO(house));
             Log.info("House added with id: " + id);
-            return Response.ok().build();
+            return Response.ok(house).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {

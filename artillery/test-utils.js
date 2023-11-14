@@ -88,9 +88,8 @@ loadData();
  * Sets the body to an image, when using images.
  */
 function uploadImageBody(requestParams, context, ee, next) {
-	requestParams.formData.image.file = images.sample();
-
-	return next();
+	context.vars.image = images.sample();
+	return next()
 }
 
 /**
