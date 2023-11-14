@@ -107,6 +107,7 @@ public class HouseResource {
 
             String name = house.getName();
             String location = house.getLocation();
+            String description = house.getDescription();
 
             if (name!= null) {
                 houseDB.setName(name);
@@ -116,6 +117,9 @@ public class HouseResource {
             }
             if (ownerId != null) {
                 houseDB.setOwnerId(ownerId);
+            }
+            if (description != null) {
+                houseDB.setDescription(description);
             }
             if (contents.length > 0) {
                 String mediaId = media.uploadImage(contents);
@@ -167,11 +171,47 @@ public class HouseResource {
     }
 
     @POST
-    @Path("/available")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Path("/{id}/available")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response availability(){
-        return Response.ok().build();
+    public Response availability(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, HouseDAO house){
+        try {
+            Log.info("houseAvailable: " + id);
+
+            boolean empty = HousesCache.getHouseById(id).isEmpty();
+            if (empty) {
+                Log.info("A house with the given id does not exist.");
+                throw new WebApplicationException(Response.Status.CONFLICT);
+            }
+
+            HouseDAO houseDB = HousesCache.getHouseById(id).get(0);
+            auth.checkCookieUser(session, house.getOwnerId());
+
+            String startDate = house.getStartDate();
+            String endDate = house.getEndDate();
+            int cost = house.getCost();
+            int discount = house.getDiscount();
+
+            if (startDate != null) {
+                houseDB.setStartDate(startDate);
+            }
+            if(endDate != null){
+                houseDB.setEndDate(endDate);
+            }
+            if(cost != 0){
+                houseDB.setCost(cost);
+            }
+            if (discount <= 30){
+                houseDB.setDiscount(discount);
+            }
+
+            hdb.putHouse(houseDB);
+            return Response.ok().build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new InternalServerErrorException(e);
+        }
     }
 
     @GET

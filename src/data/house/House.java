@@ -9,6 +9,8 @@ public class House {
     private String location;
     private String description;
     private String ownerId;
+    private String startDate;
+    private String endDate;
     private int cost;
     private int discount;
 
@@ -64,6 +66,22 @@ public class House {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public int getCost(){
