@@ -16,51 +16,38 @@ scenarios:
     weight: 1
     flow:
       - loop:                            # let's create 950 users - loop ... count
-        - post:                          # First: post image for the user
-            url: "/media"
-            headers:
-              Content-Type: application/octet-stream
-              Accept: application/json
-            beforeRequest: "uploadImageBody"
-            capture: 
-              regexp: "(.+)"
-              as: "imageId"              # capture the reply as image id to be used in user creation
         - function: "genNewUser"         # Generate the needed information for the user
         - post:
             url: "/user"
             headers:
-              Content-Type: application/json
+              Content-Type: multipart/form-data"
               Accept: application/json
-            json:
-              id: "{{ userid }}"
-              name: "{{ name }}"
-              pwd: "{{ pwd }}"
-              photoId: "{{ imageId }}"
-              houseIds: []
+            beforeRequest: "uploadImageBody"
+            formData:
+              - name: "user"
+                type: "text"
+                value: '{"id": "{{ userid }}", "name": "{{ name }}", "pwd": "{{ pwd }}"}'
+              - name: "image"
+                type: "file"
+                file: ""
             afterResponse: "genNewUserReply"    # capture result and store in file
         count: 250
       - loop:                            # let's create 50 users - loop ... count
         - post:                          # First: post image for the user
-            url: "/media"
-            headers:
-              Content-Type: application/octet-stream
-              Accept: application/json
-            beforeRequest: "uploadImageBody"
-            capture: 
-              regexp: "(.+)"
-              as: "imageId"              # capture the reply as image id to be used in user creation
         - function: "genNewUser"         # Generate the needed information for the user
         - post:
             url: "/user"
             headers:
-              Content-Type: application/json
+              Content-Type: multipart/form-data"
               Accept: application/json
-            json:
-              id: "{{ userid }}"
-              name: "{{ name }}"
-              pwd: "{{ pwd }}"
-              photoId: "{{ imageId }}"
-              houseIds: []
+            beforeRequest: "uploadImageBody"
+            formData:
+              - name: "user"
+                type: "text"
+                value: '{"id": "{{ userid }}", "name": "{{ name }}", "pwd": "{{ pwd }}"}'
+              - name: "image"
+                type: "file"
+                file: ""
             afterResponse: "genNewUserReply"    # capture result and store in file
         - post:
             url: "/user/auth"
@@ -70,28 +57,21 @@ scenarios:
               user: "{{ userid }}"
               pwd: "{{ pwd }}"
         - loop:                            # let's create 50 users - loop ... count
-          - post:                          # First: post image for the house
-              url: "/media"
-              headers:
-                Content-Type: application/octet-stream
-                Accept: application/json
-              beforeRequest: "uploadImageBody"
-              capture: 
-                regexp: "(.+)"
-                as: "imageId"              # capture the reply as image id to be used in house creation
-          - function: "genNewHouse"         # Generate the needed information for the house
+          - function: "genNewHouse"         # Generate the needed information for the user
           - post:
               url: "/house"
               headers:
-                Content-Type: application/json
+                Content-Type: multipart/form-data"
                 Accept: application/json
-              json:
-                name: "{{ name }}"
-                location: "{{ location }}"
-                description: "{{ description }}"
-                owner: "{{ userid }}"
-                images: ["{{ imageId }}"]
-              capture: 
+              beforeRequest: "uploadImageBody"
+              formData:
+                - name: "user"
+                  type: "text"
+                  value: '{"name": "{{ name }}", "location": "{{ location }}", "description": "{{ description }}", "owner": "{{ userid }}"}'
+                - name: "image"
+                  type: "file"
+                  file: ""
+              capture:
                 json: "$.id"
                 as: "houseid"              # capture the house id to be used in house creation
           - post:                          # make this house available
