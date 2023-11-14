@@ -166,6 +166,14 @@ public class HouseResource {
 
     }
 
+    @POST
+    @Path("/available")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response availability(){
+        return Response.ok().build();
+    }
+
     @GET
     @Path("/{location}")
     @Consumes(MediaType.APPLICATION_JSON)

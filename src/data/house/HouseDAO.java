@@ -10,7 +10,7 @@ public class HouseDAO extends House implements ObjectDAO {
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
     public HouseDAO(House h) {
-        super(h.getId(), h.getName(), h.getLocation(),h.getOwnerId());
+        super(h.getId(), h.getName(), h.getLocation(),h.getOwnerId(), h.getDescription());
     }
 
     public HouseDAO() {

@@ -7,14 +7,18 @@ public class House {
     private String id;
     private String name;
     private String location;
+    private String description;
     private String ownerId;
+    private int cost;
+    private int discount;
 
     public House() {}
 
-    public House(String id, String name, String location, String ownerId) {
+    public House(String id, String name, String location, String ownerId, String description) {
         this.id = id;
         this.name = name;
         this.location = location;
+        this.description = description;
         this.ownerId = ownerId;
     }
 
@@ -54,5 +58,28 @@ public class House {
         this.ownerId = ownerId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getCost(){
+        return this.cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getDiscount(){
+        return this.discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
 
 }
