@@ -45,10 +45,9 @@ scenarios:
             headers:
               Content-Type: application/json
             json:
-              user: "{{ userid }}"
+              id: "{{ userid }}"
               pwd: "{{ pwd }}"
         - loop:                            # let's create 50 users - loop ... count
-          - post:                          # First: post image for the house
           - function: "genNewHouse"         # Generate the needed information for the house
           - post:
               beforeRequest: "uploadImageBody"
@@ -59,7 +58,7 @@ scenarios:
               formData:
                 house: '{"name":"{{ name }}","location":"{{ location }}","ownerId":"{{ userid }}"}'
                 image: "{{ image }}"
-              capture: 
+              capture:
                 json: "$.id"
                 as: "houseid"              # capture the house id to be used in house creation
           - post:                          # make this house available
