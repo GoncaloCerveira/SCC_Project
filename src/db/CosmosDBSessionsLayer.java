@@ -10,7 +10,7 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.authentication.SessionDAO;
-import data.availability.AvailabilityDAO;
+import data.rental.RentalDAO;
 import utils.AzureProperties;
 
 public class CosmosDBSessionsLayer {
@@ -55,9 +55,9 @@ public class CosmosDBSessionsLayer {
         else throw new NotFoundException();
     }
 
-    public CosmosItemResponse<AvailabilityDAO> putSession(AvailabilityDAO availability) {
+    public CosmosItemResponse<RentalDAO> putSession(RentalDAO availability) {
         init();
-        CosmosItemResponse<AvailabilityDAO> res = sessions.replaceItem(availability, availability.getId(), new PartitionKey(availability.getHouseId()), new CosmosItemRequestOptions());
+        CosmosItemResponse<RentalDAO> res = sessions.replaceItem(availability, availability.getId(), new PartitionKey(availability.getHouseId()), new CosmosItemRequestOptions());
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();

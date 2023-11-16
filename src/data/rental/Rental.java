@@ -6,33 +6,30 @@ package data.rental;
 public class Rental {
     private String id;
     private String houseId;
-    private String userId;
-    private int initDate;
-    private int endDate;
-    private int price;
+    private String user;
+    private String fromDate;
+    private String toDate;
+    private String location;
+    private int cost;
+    private int discount;
+    private boolean free;
 
     public Rental() {
     }
 
-    public Rental(String id, String houseId, String userId, int initDate, int endDate, int price) {
+    public Rental(String id, String houseId, String user, String fromDate, String toDate, String location,
+                  int cost, int discount, boolean free) {
         this.id = id;
         this.houseId = houseId;
-        this.userId = userId;
-        this.initDate = initDate;
-        this.endDate = endDate;
-        this.price = price;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.cost = cost;
+        this.discount = discount;
+        this.free = free;
     }
 
-    public boolean validateCreate() {
-        return this.id != null && this.initDate != 0 && this.endDate != 0 && this.price != 0 && this.initDate <= this.endDate;
-    }
-
-    public boolean validateStartDate(int startDate) {
-        return startDate <= this.endDate;
-    }
-
-    public boolean validateEndDate(int endDate) {
-        return endDate >= this.initDate;
+    public boolean validate() {
+        return this.fromDate != null && this.toDate != null && this.fromDate.compareTo(this.toDate) < 0 && this.cost != 0 && this.discount != 0;
     }
 
     public String getId() {
@@ -51,36 +48,60 @@ public class Rental {
         this.houseId = houseId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public int getInitDate() {
-        return initDate;
+    public String getFromDate() {
+        return fromDate;
     }
 
-    public void setInitDate(int initDate) {
-        this.initDate = initDate;
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
     }
 
-    public int getEndDate() {
-        return endDate;
+    public String getToDate() {
+        return toDate;
     }
 
-    public void setEndDate(int endDate) {
-        this.endDate = endDate;
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
     }
 
-    public int getPrice() {
-        return price;
+    public String getLocation() {
+        return location;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public boolean isFree() {
+        return free;
+    }
+
+    public void setFree(boolean free) {
+        this.free = free;
     }
 
 

@@ -27,34 +27,24 @@ public class RentalResource {
     private static final Logger Log = Logger.getLogger(RentalResource.class.getName());
 
     @POST
-    @Path("/")
+    @Path("/{rentalId}/renter")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Rental rental) {
+    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Rental rental,
+                           @PathParam("rentalId") String rentalId) {
         try {
-            Log.info("createRental from: " + rental.getUserId() + " for: " + houseId);
+            auth.checkCookieUser(session, null);
 
-            String userId = auth.getUserId(session);
-
-            if (!rental.validateCreate()) {
-                Log.info("Null information was given");
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            List<RentalDAO> results = RentalsCache.getRentalById(rentalId);
+            if(results.isEmpty()) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            int startDate = rental.getInitDate();
-            int endDate = rental.getEndDate();
-            boolean empty = RentalsCache.getHouseRentalByDate(houseId, startDate, endDate).isEmpty();
-            if (!empty) {
-                Log.info("House is already rented.");
-                throw new WebApplicationException(Response.Status.CONFLICT);
-            }
+            RentalDAO rentalDB = results.get(0);
+            rentalDB.setUser(session.getName());
+            rentalDB.setFree(false);
 
-            rental.setId(UUID.randomUUID().toString());
-            rental.setHouseId(houseId);
-            rental.setUserId(userId);
-
-            rdb.postRental(new RentalDAO(rental));
-            Log.info("Rental created.");
+            rdb.postRental(rentalDB);
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -64,41 +54,39 @@ public class RentalResource {
 
     }
 
-    @PATCH
+    @GET
+    @Path("/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSlots(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
+                             @QueryParam("free") boolean free) {
+        try {
+            auth.checkCookieUser(session, null);
+            return Response.ok(RentalsCache.getFreeSlots()).build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+
+    }
+
+    @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
-                           @QueryParam("rid") String rentalId, Rental rental) {
+                           @QueryParam("rentalId") String rentalId, Rental rental) {
         try {
             List<RentalDAO> results = RentalsCache.getRentalById(rentalId);
             if (results.isEmpty()) {
-                Log.info("Rental does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
             RentalDAO rentalDB = results.get(0);
-            auth.checkCookieUser(session, rental.getUserId());
-
-            Log.info("updateRental from: " + rentalDB.getUserId() + " for: " + houseId);
-
-            int startDate = rental.getInitDate();
-            int endDate = rental.getEndDate();
-
-            if(startDate > endDate) {
-                Log.info("Invalid dates.");
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
-            }
-
-            if(startDate != 0 && rentalDB.validateStartDate(startDate)) {
-                rentalDB.setInitDate(startDate);
-            }
-            if(endDate != 0 && rentalDB.validateEndDate(endDate)) {
-                rentalDB.setEndDate(endDate);
-            }
+            auth.checkCookieUser(session, rental.getUser());
 
             rdb.putRental(new RentalDAO(rental));
-            Log.info("Rental updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -118,12 +106,10 @@ public class RentalResource {
 
         List<HouseDAO> results = HousesCache.getHouseById(houseId);
         if (results.isEmpty()) {
-            Log.info("House does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
         List<RentalDAO> rentals = RentalsCache.getHouseRentals(st, len, houseId);
-        Log.info("Rentals retrieved.");
         return Response.ok(rentals).build();
     }
 

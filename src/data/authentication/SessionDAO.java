@@ -1,7 +1,6 @@
 package data.authentication;
 
 import data.ObjectDAO;
-import data.availability.Availability;
 
 public class SessionDAO extends Session implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
@@ -37,4 +36,6 @@ public class SessionDAO extends Session implements ObjectDAO {
     public void set_ts(String _ts) {
         this._ts = _ts;
     }
+
+
 }

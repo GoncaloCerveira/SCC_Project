@@ -97,5 +97,34 @@ public class RentalsCache extends RedisCache {
         return rentalsDB.stream().toList();
     }
 
+    public static List<RentalDAO> getFreeSlots() {
+        List<RentalDAO> rentals = readFromCache("getFreeSlots", "", new TypeReference<>() {});
+
+        if(rentals != null) {
+            return rentals;
+        }
+
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getFreeSlots();
+        if(rentalsDB.iterator().hasNext()) {
+            writeToCache("getFreeSlots", "", rentalsDB);
+        }
+        return rentalsDB.stream().toList();
+    }
+
+    public static List<String> getHouseIdByPeriodLocation(String st, String len, String initDate, String endDate) {
+        String key = st + len + initDate + endDate;
+        List<String> houseIds = readFromCache("getHouseIdByPeriodLocation", key, new TypeReference<>() {});
+
+        if(houseIds != null) {
+            return houseIds;
+        }
+
+        CosmosPagedIterable<String> houseIdsDB = rdb.getHouseIdByPeriodLocation(st, len, initDate, endDate);
+        if(houseIdsDB.iterator().hasNext()) {
+            writeToCache("getHouseIdByPeriodLocation", key, houseIdsDB);
+        }
+        return houseIdsDB.stream().toList();
+    }
+
 
 }

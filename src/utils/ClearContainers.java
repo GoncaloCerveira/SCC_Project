@@ -7,7 +7,6 @@ import db.*;
 import srv.resources.MediaResource;
 
 public class ClearContainers {
-    private static final CosmosDBAvailabilitiesLayer adb = CosmosDBAvailabilitiesLayer.getInstance();
     private static final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
     private static final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
     private static final CosmosDBQuestionsLayer qdb = CosmosDBQuestionsLayer.getInstance();

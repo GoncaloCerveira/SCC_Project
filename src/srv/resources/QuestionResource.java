@@ -34,7 +34,8 @@ public class QuestionResource {
         try {
             Log.info("createQuestion from: " + question.getUser() + " for: " + houseId);
 
-            String userId = auth.getUserId(session);
+            auth.checkCookieUser(session, null);
+            String userId = session.getName();
 
             if (!question.validateCreate()) {
                 Log.info("Null information was given");

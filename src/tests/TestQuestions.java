@@ -59,12 +59,12 @@ public class TestQuestions {
             RentalDAO r = new RentalDAO();
             r.setId(rId);
             r.setHouseId(hId);
-            r.setUserId(uId);
+            r.setUser(uId);
             Date date = dateFormat.parse("12-12-2023");
-            r.setInitDate((int) date.getTime());
+            r.setFromDate(String.valueOf(date.getTime()));
             Date date2 = dateFormat.parse("18-12-2023");
-            r.setEndDate((int) date2.getTime());
-            r.setPrice(200);
+            r.setToDate(String.valueOf(date2.getTime()));
+            r.setCost(200);
 
             res3 = rdb.putRental(r);
             System.out.println( "Put result");

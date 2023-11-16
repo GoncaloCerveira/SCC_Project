@@ -39,13 +39,13 @@ public class AzureManagement {
 	static final boolean CREATE_REDIS = true;
 
 	// TODO: change your suffix and other names if you want
-	static final String MY_SUFFIX = "68882"; // Add your suffix here
+	static final String MY_SUFFIX = ""; // Add your suffix here
 
 	static final String AZURE_COSMOSDB_NAME = "scc24" + MY_SUFFIX;	// Cosmos DB account name
 	static final String AZURE_COSMOSDB_DATABASE = "scc24db" + MY_SUFFIX;	// Cosmos DB database name
 	static final String[] BLOB_CONTAINERS = { "images" };	// TODO: Containers to add to the blob storage
 
-	static final String[][] COSMOS_COLLECTIONS = { { "houses", "/location" }, { "availabilities", "/houseId" }, { "questions", "/ownerId" },
+	static final String[][] COSMOS_COLLECTIONS = { { "houses", "/location" }, { "questions", "/ownerId" },
 			{ "rentals", "/houseId" }, { "users", "/id" }, { "media", "/itemId" }, { "sessions", "/name"}};
 
 	static final Region[] REGIONS = new Region[] { Region.EUROPE_WEST}; // Define the regions to deploy resources here

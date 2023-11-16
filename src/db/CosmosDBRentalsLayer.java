@@ -96,6 +96,16 @@ public class CosmosDBRentalsLayer {
         return rentals.queryItems("SELECT * FROM rentals where rentals.userId=\"" + userId + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
+    public CosmosPagedIterable<RentalDAO> getFreeSlots() {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals WHERE free = true", new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
+    public CosmosPagedIterable<String> getHouseIdByPeriodLocation(String st, String len, String initDate, String endDate) {
+        init();
+        return rentals.queryItems("SELECT rentals.houseId FROM rentals WHERE rentals.fromDate >= " + initDate + " AND rentals.endDate <= " + endDate + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), String.class);
+    }
+
     public void close() {
         client.close();
     }

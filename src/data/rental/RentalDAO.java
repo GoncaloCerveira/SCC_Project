@@ -1,5 +1,6 @@
 package data.rental;
 
+
 import data.ObjectDAO;
 
 /**
@@ -12,12 +13,12 @@ public class RentalDAO extends Rental implements ObjectDAO {
     public RentalDAO() {
     }
 
-    public RentalDAO(String id, String houseId, String userId, int initDate, int endDate, int price) {
-        super(id, houseId, userId, initDate, endDate, price);
+    public RentalDAO(String id, String houseId, String user, String fromDate, String toDate, String location, int cost, int discount, boolean free) {
+        super(id, houseId, user, fromDate, toDate, location, cost, discount, free);
     }
 
     public RentalDAO(Rental r) {
-        super(r.getId(), r.getHouseId(), r.getUserId(), r.getInitDate(), r.getEndDate(), r.getPrice());
+        super(r.getId(), r.getHouseId(), r.getUser(), r.getFromDate(), r.getToDate(), r.getLocation(), r.getCost(), r.getDiscount(), r.isFree());
     }
 
     @Override

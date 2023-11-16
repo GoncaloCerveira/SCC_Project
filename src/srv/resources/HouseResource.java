@@ -1,15 +1,16 @@
 package srv.resources;
 
 import cache.*;
-import data.availability.AvailabilityDAO;
+import data.rental.Rental;
+import data.rental.RentalDAO;
 import data.house.House;
 import data.house.HouseDAO;
 
 import data.media.MediaDAO;
-import db.CosmosDBAvailabilitiesLayer;
 import db.CosmosDBHousesLayer;
 import db.CosmosDBMediaLayer;
 
+import db.CosmosDBRentalsLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
@@ -18,13 +19,12 @@ import utils.AuthValidation;
 import utils.MultiPartFormData;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 @Path("/house")
 public class HouseResource {
     private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
+    private final CosmosDBRentalsLayer rdb = CosmosDBRentalsLayer.getInstance();
     private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
-    private final CosmosDBAvailabilitiesLayer adb = CosmosDBAvailabilitiesLayer.getInstance();
     private final AuthValidation auth = new AuthValidation();
     private final MediaResource media = new MediaResource();
 
@@ -77,7 +77,7 @@ public class HouseResource {
         List<String> houseIds;
         List<HouseDAO> houses;
         if(initDate != null && endDate != null) {
-            houseIds = AvailabilityCache.getHouseIdByPeriodLocation(st, len, initDate, endDate);
+            houseIds = RentalsCache.getHouseIdByPeriodLocation(st, len, initDate, endDate);
             houses = HousesCache.getHousesById(st, len, houseIds);
         }
         else if(location != null) {
@@ -180,7 +180,7 @@ public class HouseResource {
     @Path("/{houseId}/available")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response availability(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, AvailabilityDAO availability){
+    public Response makeAvailable(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Rental rental){
         try {
             List<HouseDAO> houses = HousesCache.getHouseById(houseId);
             if (houses.isEmpty()) {
@@ -190,12 +190,12 @@ public class HouseResource {
             HouseDAO houseDB = houses.get(0);
             auth.checkCookieUser(session, houseDB.getOwnerId());
 
-            if(!availability.validate()) {
+            if(!rental.validate()) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            String[] fromSplit = availability.getFromDate().split("-");
-            String[] toSplit = availability.getToDate().split("-");
+            String[] fromSplit = rental.getFromDate().split("-");
+            String[] toSplit = rental.getToDate().split("-");
             if (fromSplit.length != 2 || toSplit.length != 2) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
@@ -205,18 +205,18 @@ public class HouseResource {
             int toYear = Integer.parseInt(toSplit[1]);
             int numSlots = toMonth - fromMonth + (toYear - fromYear) * 12;
 
-            availability.setLocation(houseDB.getLocation());
-            availability.setHouseId(houseId);
+            rental.setLocation(houseDB.getLocation());
+            rental.setHouseId(houseId);
             for(int i = 0 ; i < numSlots ; i++) {
                 String id = UUID.randomUUID().toString();
-                availability.setId(id);
-                availability.setFromDate(fromMonth + "-" + fromYear);
+                rental.setId(id);
+                rental.setFromDate(fromMonth + "-" + fromYear);
 
                 fromMonth = fromMonth % 12 + 1;
                 fromYear = fromYear + (1 / fromMonth);
 
-                availability.setToDate(fromMonth + "-" + fromYear);
-                adb.postAvailability(availability);
+                rental.setToDate(fromMonth + "-" + fromYear);
+                rdb.postRental(new RentalDAO(rental));
             }
             return Response.ok().build();
         } catch (WebApplicationException e) {
