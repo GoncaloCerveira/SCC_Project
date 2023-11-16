@@ -112,7 +112,8 @@ public class RentalResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listRentals(@PathParam("houseId") String houseId, @QueryParam("st") String st , @QueryParam("len") String len) {
+    public Response listRentals(@PathParam("houseId") String houseId,
+                                @QueryParam("st") String st , @QueryParam("len") String len) {
         Log.info("listRentals for: " + houseId);
 
         List<HouseDAO> results = HousesCache.getHouseById(houseId);
@@ -121,7 +122,7 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        List<RentalDAO> rentals = RentalsCache.getHouseRentals(len, st, houseId);
+        List<RentalDAO> rentals = RentalsCache.getHouseRentals(st, len, houseId);
         Log.info("Rentals retrieved.");
         return Response.ok(rentals).build();
     }

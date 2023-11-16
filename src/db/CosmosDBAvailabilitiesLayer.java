@@ -10,8 +10,6 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.availability.AvailabilityDAO;
-import data.house.HouseDAO;
-import data.rental.RentalDAO;
 import utils.AzureProperties;
 
 public class CosmosDBAvailabilitiesLayer {
@@ -39,7 +37,7 @@ public class CosmosDBAvailabilitiesLayer {
         if( db != null)
             return;
         db = client.getDatabase(AzureProperties.DB_NAME);
-        availabilities = db.getContainer("availability");
+        availabilities = db.getContainer("availabilities");
 
     }
 
@@ -64,9 +62,9 @@ public class CosmosDBAvailabilitiesLayer {
         else throw new NotFoundException();
     }
 
-    public CosmosPagedIterable<String> getHouseIdByPeriodLocation(String len, String st, String initDate, String endDate) {
+    public CosmosPagedIterable<String> getHouseIdByPeriodLocation(String st, String len, String initDate, String endDate) {
         init();
-        return availabilities.queryItems("SELECT availabilities.houseId FROM availabilities WHERE availabilities.fromDate >= " + initDate + " AND rentals.endDate <= " + endDate + "\" LIMIT " + len + " OFFSET " + st, new CosmosQueryRequestOptions(), String.class);
+        return availabilities.queryItems("SELECT availabilities.houseId FROM availabilities WHERE availabilities.fromDate >= " + initDate + " AND rentals.endDate <= " + endDate + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), String.class);
     }
 
     public void close() {

@@ -28,14 +28,14 @@ public class HousesCache extends AuthCache{
         return houseDB.stream().toList();
     }
 
-    public static List<HouseDAO> getHouses(String len, String st) {
+    public static List<HouseDAO> getHouses(String st, String len) {
         List<HouseDAO> houses = readFromCache("getHouses", "", new TypeReference<>() {});
 
         if(houses != null) {
             return houses;
         }
 
-        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouses(len, st);
+        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouses(st, len);
         if(housesDB.iterator().hasNext()) {
             writeToCache("getHouses", "", housesDB);
         }
@@ -43,7 +43,7 @@ public class HousesCache extends AuthCache{
         return housesDB.stream().toList();
     }
 
-    public static List<HouseDAO> getHousesById(String len, String st, List<String> ids) {
+    public static List<HouseDAO> getHousesById(String st, String len, List<String> ids) {
         Gson gson = new Gson();
         String keys = gson.toJson(ids);
         List<HouseDAO> houses = readFromCache("getHousesById", keys, new TypeReference<>() {});
@@ -52,7 +52,7 @@ public class HousesCache extends AuthCache{
             return houses;
         }
 
-        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHousesById(len, st, ids);
+        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHousesById(st, len, ids);
         if(housesDB.iterator().hasNext()) {
             writeToCache("getHousesById", keys, housesDB);
         }
@@ -60,14 +60,14 @@ public class HousesCache extends AuthCache{
         return housesDB.stream().toList();
     }
 
-    public static List<HouseDAO> getUserHouses(String len, String st, String ownerId) {
+    public static List<HouseDAO> getUserHouses(String st, String len, String ownerId) {
         List<HouseDAO> houses = readFromCache("getUserHouses", ownerId, new TypeReference<>() {});
 
         if(houses != null) {
             return houses;
         }
 
-        CosmosPagedIterable<HouseDAO> housesDB = hdb.getUserHouses(len, st, ownerId);
+        CosmosPagedIterable<HouseDAO> housesDB = hdb.getUserHouses(st, len, ownerId);
         if(housesDB.iterator().hasNext()) {
             writeToCache("getUserHouses", ownerId, housesDB);
         }
@@ -75,14 +75,14 @@ public class HousesCache extends AuthCache{
         return housesDB.stream().toList();
     }
 
-    public static List<HouseDAO> getHousesByLocation(String len, String st, String location) {
+    public static List<HouseDAO> getHousesByLocation(String st, String len, String location) {
         List<HouseDAO> houses = readFromCache("getHousesByLocation", location, new TypeReference<>() {});
 
         if(houses != null) {
             return houses;
         }
 
-        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHousesByLocation(len, st, location);
+        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHousesByLocation(st, len, location);
         if(housesDB.iterator().hasNext()) {
             writeToCache("getHousesByLocation", location, housesDB);
         }
@@ -90,15 +90,15 @@ public class HousesCache extends AuthCache{
         return housesDB.stream().toList();
     }
 
-    public static List<HouseDAO> getHouseDiscounts(String len, String st) {
-        String key = len + st;
+    public static List<HouseDAO> getHouseDiscounts(String st, String len) {
+        String key = st + len;
         List<HouseDAO> houses = readFromCache("getHouseDiscounts", key, new TypeReference<>() {});
 
         if(houses != null) {
             return houses;
         }
 
-        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouseDiscounts(len, st);
+        CosmosPagedIterable<HouseDAO> housesDB = hdb.getHouseDiscounts(st, len);
         if(housesDB.iterator().hasNext()) {
             writeToCache("getHouseDiscounts", key, housesDB);
         }

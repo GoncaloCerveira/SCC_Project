@@ -1,7 +1,6 @@
 package utils;
 
-import com.nimbusds.jose.shaded.gson.Gson;
-import data.user.User;
+import com.google.gson.Gson;
 
 public class MultiPartFormData<T> {
     private T item;

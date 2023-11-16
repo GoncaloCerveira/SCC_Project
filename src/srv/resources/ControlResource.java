@@ -1,7 +1,5 @@
 package srv.resources;
 
-import com.azure.core.annotation.Post;
-import data.user.UserDAO;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 

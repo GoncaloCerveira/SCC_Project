@@ -7,7 +7,6 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
-// TODO
 import data.rental.RentalDAO;
 import utils.AzureProperties;
 
@@ -82,19 +81,19 @@ public class CosmosDBRentalsLayer {
         return rentals.queryItems("SELECT rentals.houseid FROM rentals WHERE rentals.startDate >= " + initDate + " AND rentals.endDate <= " + endDate, new CosmosQueryRequestOptions(), String.class);
     }
 
-    public CosmosPagedIterable<RentalDAO> getRentals(String len, String st) {
+    public CosmosPagedIterable<RentalDAO> getRentals(String st, String len) {
         init();
-        return rentals.queryItems("SELECT * FROM rentals LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT * FROM rentals OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
-    public CosmosPagedIterable<RentalDAO> getHouseRentals(String len, String st, String houseId) {
+    public CosmosPagedIterable<RentalDAO> getHouseRentals(String st, String len, String houseId) {
         init();
-        return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
-    public CosmosPagedIterable<RentalDAO> getUserRentals(String len, String st, String userId) {
+    public CosmosPagedIterable<RentalDAO> getUserRentals(String st, String len, String userId) {
         init();
-        return rentals.queryItems("SELECT * FROM rentals where rentals.userId=\"" + userId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT * FROM rentals where rentals.userId=\"" + userId + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
     public void close() {

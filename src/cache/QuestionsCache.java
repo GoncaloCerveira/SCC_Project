@@ -27,7 +27,7 @@ public class QuestionsCache extends RedisCache {
     }
 
     public static List<QuestionDAO> getQuestionByHouseAndUser(String houseId, String userId) {
-        String id = houseId + "#" + userId;
+        String id = houseId + userId;
         List<QuestionDAO> questions = readFromCache("getQuestionByHouseAndUser", id, new TypeReference<>() {});
 
         if(questions != null) {
@@ -42,14 +42,14 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getQuestions(String len, String st) {
+    public static List<QuestionDAO> getQuestions(String st, String len) {
         List<QuestionDAO> questions = readFromCache("getQuestions", "", new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestions(len, st);
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestions(st, len);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getQuestionById", "", questionsDB);
         }
@@ -57,14 +57,14 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getHouseQuestions(String len, String st, String houseId) {
+    public static List<QuestionDAO> getHouseQuestions(String st, String len, String houseId) {
         List<QuestionDAO> questions = readFromCache("getHouseQuestions", houseId, new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestions(len, st, houseId);
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestions(st, len, houseId);
         writeToCache("getHouseQuestions", houseId, questionsDB);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getHouseQuestions", houseId, questionsDB);
@@ -73,14 +73,14 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getHouseQuestionsStatus(String len, String st, String houseId) {
+    public static List<QuestionDAO> getHouseQuestionsStatus(String st, String len, String houseId) {
         List<QuestionDAO> questions = readFromCache("getHouseQuestionsStatus", houseId, new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestionsStatus(len, st, houseId);
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestionsStatus(st, len, houseId);
         writeToCache("getHouseQuestionsStatus", houseId, questionsDB);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getHouseQuestionsStatus", houseId, questionsDB);

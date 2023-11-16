@@ -12,7 +12,7 @@ import java.util.List;
 public class AvailabilityCache extends RedisCache {
     private static final CosmosDBAvailabilitiesLayer adb = CosmosDBAvailabilitiesLayer.getInstance();
 
-    public static List<String> getHouseIdByPeriodLocation(String len, String st, String initDate, String endDate) {
+    public static List<String> getHouseIdByPeriodLocation(String st, String len, String initDate, String endDate) {
         String key = initDate + endDate;
         List<String> houseIds = readFromCache("getHouseIdByPeriodLocation", key, new TypeReference<>() {});
 
@@ -20,7 +20,7 @@ public class AvailabilityCache extends RedisCache {
             return houseIds;
         }
 
-        CosmosPagedIterable<String> houseIdsDB = adb.getHouseIdByPeriodLocation(len, st, initDate, endDate);
+        CosmosPagedIterable<String> houseIdsDB = adb.getHouseIdByPeriodLocation(st, len, initDate, endDate);
         if(houseIdsDB.iterator().hasNext()) {
             writeToCache("getHouseIdByPeriodLocation", key, houseIdsDB);
         }

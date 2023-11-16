@@ -6,7 +6,6 @@ import data.authentication.Login;
 import data.user.User;
 import data.user.UserDAO;
 
-import db.CosmosDBMediaLayer;
 import db.CosmosDBUsersLayer;
 
 import jakarta.ws.rs.*;
@@ -25,7 +24,6 @@ import java.util.logging.Logger;
 @Path("/user")
 public class UserResource {
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
-    private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
     private final MediaResource media = new MediaResource();
     private final AuthValidation auth = new AuthValidation();
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
@@ -180,7 +178,7 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            return Response.ok(HousesCache.getUserHouses(len, st, id)).build();
+            return Response.ok(HousesCache.getUserHouses(st, len, id)).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {
@@ -203,7 +201,7 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            return Response.ok(RentalsCache.getUserRentals(len, st, id)).build();
+            return Response.ok(RentalsCache.getUserRentals(st, len, id)).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {

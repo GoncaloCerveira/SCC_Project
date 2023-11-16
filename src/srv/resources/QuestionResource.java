@@ -32,7 +32,7 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Question question) {
         try {
-            Log.info("createQuestion from: " + question.getUserId() + " for: " + houseId);
+            Log.info("createQuestion from: " + question.getUser() + " for: " + houseId);
 
             String userId = auth.getUserId(session);
 
@@ -47,7 +47,7 @@ public class QuestionResource {
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
-            question.setUserId(userId);
+            question.setUser(userId);
             question.setReply(null);
 
             qdb.postQuestion(new QuestionDAO(question));
@@ -66,7 +66,6 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response replyQuestion(@PathParam("houseId") String houseId, @PathParam("questionId") String questionId,
-                                  @QueryParam("st") String st , @QueryParam("len") String len,
                                   @BodyParam("reply") String reply) {
         Log.info("replyQuestion for: " + houseId);
 
@@ -108,9 +107,9 @@ public class QuestionResource {
 
         List<QuestionDAO> questions;
         if(noAnswer != null) {
-            questions = QuestionsCache.getHouseQuestionsStatus(len, st, houseId);
+            questions = QuestionsCache.getHouseQuestionsStatus(st, len, houseId);
         } else {
-            questions = QuestionsCache.getHouseQuestions(len, st, houseId);
+            questions = QuestionsCache.getHouseQuestions(st, len, houseId);
         }
         Log.info("Rentals retrieved.");
         return Response.ok(questions).build();

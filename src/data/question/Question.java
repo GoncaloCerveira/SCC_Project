@@ -6,8 +6,8 @@ package data.question;
 public class Question {
     private String id;
     private String houseId;
-    private String userId;
-    private String ownerId;
+    private String user;
+    private String owner;
     private String text;
     private String reply;
     private boolean noAnswer;
@@ -15,18 +15,18 @@ public class Question {
     public Question() {
     }
 
-    public Question(String id, String houseId, String userId, String ownerId, String text, String reply, boolean noAnswer) {
+    public Question(String id, String houseId, String user, String owner, String text, String reply, boolean noAnswer) {
         this.id = id;
         this.houseId = houseId;
-        this.userId = userId;
-        this.ownerId = ownerId;
+        this.user = user;
+        this.owner = owner;
         this.text = text;
         this.reply = reply;
         this.noAnswer = noAnswer;
     }
 
     public boolean validateCreate() {
-        return this.id != null && this.houseId != null && this.ownerId != null && this.text != null;
+        return this.id != null && this.houseId != null && this.owner != null && this.text != null;
     }
 
     public String getId() {
@@ -45,20 +45,20 @@ public class Question {
         this.houseId = houseId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getText() {

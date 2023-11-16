@@ -76,7 +76,7 @@ public class TestQuestions {
             QuestionDAO q = new QuestionDAO();
             q.setId(qId);
             q.setHouseId(hId);
-            q.setOwnerId(uId);
+            q.setOwner(uId);
             q.setText("Does the house have heating?");
 
             res4 = qdb.putQuestion(q);

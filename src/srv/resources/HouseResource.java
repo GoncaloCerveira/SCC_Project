@@ -6,12 +6,10 @@ import data.house.House;
 import data.house.HouseDAO;
 
 import data.media.MediaDAO;
-import data.rental.RentalDAO;
 import db.CosmosDBAvailabilitiesLayer;
 import db.CosmosDBHousesLayer;
 import db.CosmosDBMediaLayer;
 
-import db.CosmosDBRentalsLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
@@ -60,7 +58,7 @@ public class HouseResource {
             mdb.postMedia(new MediaDAO(mediaId, house.getId()));
 
             hdb.postHouse(new HouseDAO(house));
-            return Response.ok(houseId).build();
+            return Response.ok(house).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {
@@ -79,13 +77,13 @@ public class HouseResource {
         List<String> houseIds;
         List<HouseDAO> houses;
         if(initDate != null && endDate != null) {
-            houseIds = AvailabilityCache.getHouseIdByPeriodLocation(len, st, initDate, endDate);
-            houses = HousesCache.getHousesById(len, st, houseIds);
+            houseIds = AvailabilityCache.getHouseIdByPeriodLocation(st, len, initDate, endDate);
+            houses = HousesCache.getHousesById(st, len, houseIds);
         }
         else if(location != null) {
-            houses = HousesCache.getHousesByLocation(len, st, location);
+            houses = HousesCache.getHousesByLocation(st, len, location);
         } else {
-            houses = HousesCache.getHouses(len, st);
+            houses = HousesCache.getHouses(st, len);
         }
 
         return Response.ok(houses).build();
@@ -203,8 +201,8 @@ public class HouseResource {
             }
             int fromMonth = Integer.parseInt(fromSplit[0]);
             int fromYear = Integer.parseInt(fromSplit[1]);
-            int toMonth = Integer.parseInt(fromSplit[0]);
-            int toYear = Integer.parseInt(fromSplit[1]);
+            int toMonth = Integer.parseInt(toSplit[0]);
+            int toYear = Integer.parseInt(toSplit[1]);
             int numSlots = toMonth - fromMonth + (toYear - fromYear) * 12;
 
             availability.setLocation(houseDB.getLocation());
@@ -233,7 +231,7 @@ public class HouseResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response listDiscounts(@QueryParam("st") String st , @QueryParam("len") String len) {
-        return Response.ok(HousesCache.getHouseDiscounts(len, st)).build();
+        return Response.ok(HousesCache.getHouseDiscounts(st, len)).build();
     }
 
 

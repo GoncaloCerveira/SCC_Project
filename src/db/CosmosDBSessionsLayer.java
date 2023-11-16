@@ -11,7 +11,6 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import data.authentication.SessionDAO;
 import data.availability.AvailabilityDAO;
-import data.user.UserDAO;
 import utils.AzureProperties;
 
 public class CosmosDBSessionsLayer {

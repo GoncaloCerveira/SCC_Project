@@ -55,42 +55,42 @@ public class RentalsCache extends RedisCache {
         return houseIdsDB.stream().toList();
     }
 
-    public static List<RentalDAO> getRentals(String len, String st) {
+    public static List<RentalDAO> getRentals(String st, String len) {
         List<RentalDAO> rentals = readFromCache("getRentals", "", new TypeReference<>() {});
 
         if(rentals != null) {
             return rentals;
         }
 
-        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getRentals(len, st);
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getRentals(st, len);
         if(rentalsDB.iterator().hasNext()) {
             writeToCache("getRentals", "", rentalsDB);
         }
         return rentalsDB.stream().toList();
     }
 
-    public static List<RentalDAO> getHouseRentals(String len, String st, String houseId) {
+    public static List<RentalDAO> getHouseRentals(String st, String len, String houseId) {
         List<RentalDAO> rentals = readFromCache("getHouseRentals", houseId, new TypeReference<>() {});
 
         if(rentals != null) {
             return rentals;
         }
 
-        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getHouseRentals(len, st, houseId);
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getHouseRentals(st, len, houseId);
         if(rentalsDB.iterator().hasNext()) {
             writeToCache("getHouseRentals", houseId, rentalsDB);
         }
         return rentalsDB.stream().toList();
     }
 
-    public static List<RentalDAO> getUserRentals(String len, String st, String userId) {
+    public static List<RentalDAO> getUserRentals(String st, String len, String userId) {
         List<RentalDAO> rentals = readFromCache("getUserRentals", userId, new TypeReference<>() {});
 
         if(rentals != null) {
             return rentals;
         }
 
-        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getUserRentals(len, st, userId);
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getUserRentals(st, len, userId);
         if(rentalsDB.iterator().hasNext()) {
             writeToCache("getUserRentals", userId, rentalsDB);
         }

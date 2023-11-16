@@ -17,7 +17,7 @@ public class QuestionDAO extends Question implements ObjectDAO {
     }
 
     public QuestionDAO(Question q) {
-        super(q.getId(), q.getHouseId(), q.getUserId(), q.getOwnerId(), q.getText(), q.getReply(), q.isNoAnswer());
+        super(q.getId(), q.getHouseId(), q.getUser(), q.getOwner(), q.getText(), q.getReply(), q.isNoAnswer());
     }
 
     @Override
