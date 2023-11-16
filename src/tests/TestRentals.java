@@ -71,7 +71,7 @@ public class TestRentals {
             CosmosPagedIterable<RentalDAO> resGet;
 
             System.out.println( "Get for all ids");
-            resGet = rdb.getRentals();
+            resGet = rdb.getRentals("20", "0");
             for( RentalDAO e: resGet) {
                 System.out.println( e);
             }

@@ -96,7 +96,7 @@ public class TestQuestions {
             qdb.delQuestionById(qId);
 
             System.out.println( "Get for all ids");
-            resGet = qdb.getQuestions("0", "20");
+            resGet = qdb.getQuestions("20", "0");
             for( QuestionDAO e: resGet) {
                 System.out.println( e);
             }
