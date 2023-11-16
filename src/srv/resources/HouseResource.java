@@ -194,8 +194,8 @@ public class HouseResource {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            String[] fromSplit = availability.getFromDate().split("/");
-            String[] toSplit = availability.getToDate().split("/");
+            String[] fromSplit = availability.getFromDate().split("-");
+            String[] toSplit = availability.getToDate().split("-");
             if (fromSplit.length != 2 || toSplit.length != 2) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
@@ -210,12 +210,12 @@ public class HouseResource {
             for(int i = 0 ; i < numSlots ; i++) {
                 String id = UUID.randomUUID().toString();
                 availability.setId(id);
-                availability.setFromDate(fromMonth + "/" + fromYear);
+                availability.setFromDate(fromMonth + "-" + fromYear);
 
                 fromMonth = fromMonth % 12 + 1;
                 fromYear = fromYear + (1 / fromMonth);
 
-                availability.setToDate(fromMonth + "/" + fromYear);
+                availability.setToDate(fromMonth + "-" + fromYear);
                 adb.postAvailability(availability);
             }
             return Response.ok().build();

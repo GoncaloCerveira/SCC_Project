@@ -25,7 +25,7 @@ public class Availability {
     }
 
     public boolean validate() {
-        return this.houseId != null && this.fromDate != null && this.toDate != null && this.fromDate.compareTo(this.toDate) < 0 && this.cost != 0 && this.discount != 0;
+        return this.fromDate != null && this.toDate != null && this.fromDate.compareTo(this.toDate) < 0 && this.cost != 0 && this.discount != 0;
     }
 
     public String getId() {

@@ -82,6 +82,11 @@ public class CosmosDBHousesLayer {
 		return houses.queryItems("SELECT * FROM houses LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
+	public CosmosPagedIterable<HouseDAO> getHousesNonPaged() {
+		init();
+		return houses.queryItems("SELECT * FROM houses", new CosmosQueryRequestOptions(), HouseDAO.class);
+	}
+
 	public CosmosPagedIterable<HouseDAO> getUserHouses(String st, String len, String ownerId) {
 		init();
 		return houses.queryItems("SELECT * FROM houses WHERE houses.ownerId=\"" + ownerId + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
