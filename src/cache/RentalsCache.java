@@ -40,30 +40,59 @@ public class RentalsCache extends RedisCache {
         return rentalDB.stream().toList();
     }
 
-    public static List<RentalDAO> getRentals() {
+    public static List<String> getRentalsHouseIdsByDate(String startDate, String endDate) {
+        String key = startDate + endDate;
+        List<String> houseIds = readFromCache("getRentalsHouseIdsByDate", key, new TypeReference<>() {});
+
+        if(houseIds != null) {
+            return houseIds;
+        }
+
+        CosmosPagedIterable<String> houseIdsDB = rdb.getRentalsHouseIdsByDate(startDate, endDate);
+        if(houseIdsDB.iterator().hasNext()) {
+            writeToCache("getRentalsHouseIdsByDate", key, houseIdsDB);
+        }
+        return houseIdsDB.stream().toList();
+    }
+
+    public static List<RentalDAO> getRentals(String len, String st) {
         List<RentalDAO> rentals = readFromCache("getRentals", "", new TypeReference<>() {});
 
         if(rentals != null) {
             return rentals;
         }
 
-        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getRentals();
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getRentals(len, st);
         if(rentalsDB.iterator().hasNext()) {
             writeToCache("getRentals", "", rentalsDB);
         }
         return rentalsDB.stream().toList();
     }
 
-    public static List<RentalDAO> getHouseRentals(String houseId) {
+    public static List<RentalDAO> getHouseRentals(String len, String st, String houseId) {
         List<RentalDAO> rentals = readFromCache("getHouseRentals", houseId, new TypeReference<>() {});
 
         if(rentals != null) {
             return rentals;
         }
 
-        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getHouseRentals(houseId);
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getHouseRentals(len, st, houseId);
         if(rentalsDB.iterator().hasNext()) {
             writeToCache("getHouseRentals", houseId, rentalsDB);
+        }
+        return rentalsDB.stream().toList();
+    }
+
+    public static List<RentalDAO> getUserRentals(String len, String st, String userId) {
+        List<RentalDAO> rentals = readFromCache("getUserRentals", userId, new TypeReference<>() {});
+
+        if(rentals != null) {
+            return rentals;
+        }
+
+        CosmosPagedIterable<RentalDAO> rentalsDB = rdb.getUserRentals(len, st, userId);
+        if(rentalsDB.iterator().hasNext()) {
+            writeToCache("getUserRentals", userId, rentalsDB);
         }
         return rentalsDB.stream().toList();
     }

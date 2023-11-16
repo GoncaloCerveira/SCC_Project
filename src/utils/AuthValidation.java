@@ -1,12 +1,13 @@
-package data.authentication;
+package utils;
 
 import cache.AuthCache;
+import data.authentication.Session;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 
-public class AuthResource {
+public class AuthValidation {
     /**
      * Throws exception if not appropriate user for operation on Hopuse
      */

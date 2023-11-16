@@ -1,24 +1,24 @@
-package data.user;
+package data.authentication;
 
 public class Login {
 
-    private String id;
+    private String user;
     private String pwd;
 
     public Login() {}
 
-    public Login(String id, String pwd) {
+    public Login(String user, String pwd) {
         super();
-        this.id = id;
+        this.user = user;
         this.pwd = pwd;
     }
 
-    public String getId() {
-        return id;
+    public String getUser() {
+        return user;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getPwd() {
@@ -28,5 +28,6 @@ public class Login {
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
+
 
 }

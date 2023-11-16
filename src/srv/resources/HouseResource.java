@@ -1,21 +1,22 @@
 package srv.resources;
 
-import cache.HousesCache;
-import cache.MediaCache;
-import cache.UsersCache;
-import data.authentication.AuthResource;
+import cache.*;
+import data.availability.AvailabilityDAO;
 import data.house.House;
 import data.house.HouseDAO;
 
 import data.media.MediaDAO;
+import data.rental.RentalDAO;
+import db.CosmosDBAvailabilitiesLayer;
 import db.CosmosDBHousesLayer;
 import db.CosmosDBMediaLayer;
-import db.CosmosDBUsersLayer;
 
+import db.CosmosDBRentalsLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import utils.AuthValidation;
 import utils.MultiPartFormData;
 
 import java.util.*;
@@ -25,9 +26,9 @@ import java.util.logging.Logger;
 public class HouseResource {
     private final CosmosDBHousesLayer hdb = CosmosDBHousesLayer.getInstance();
     private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
+    private final CosmosDBAvailabilitiesLayer adb = CosmosDBAvailabilitiesLayer.getInstance();
+    private final AuthValidation auth = new AuthValidation();
     private final MediaResource media = new MediaResource();
-    private final data.authentication.AuthResource auth = new AuthResource();
-    private static final Logger Log = Logger.getLogger(HouseResource.class.getName());
 
     @POST
     @Path("/")
@@ -37,42 +38,57 @@ public class HouseResource {
         try {
             MultiPartFormData<House> mpfd = new MultiPartFormData<>();
             mpfd.extractItemMedia(formData, House.class);
-
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
             String ownerId = house.getOwnerId();
-
             auth.checkCookieUser(session, ownerId);
 
-            Log.info("createHouse of : " + ownerId);
-
             if (!house.createValidate() || contents.length == 0) {
-                Log.info("Null information was given");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
             boolean empty = UsersCache.getUserById(ownerId).isEmpty();
             if (empty) {
-                Log.info("A user with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            String id = UUID.randomUUID().toString();
-            house.setId(id);
+            String houseId = UUID.randomUUID().toString();
+            house.setId(houseId);
 
             String mediaId = media.uploadImage(contents);
             mdb.postMedia(new MediaDAO(mediaId, house.getId()));
 
             hdb.postHouse(new HouseDAO(house));
-            Log.info("House added with id: " + id);
-            return Response.ok(house).build();
+            return Response.ok(houseId).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
 
+    }
+
+    @GET
+    @Path("/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listHouses(@QueryParam("location") String location,
+                               @QueryParam("initDate") String initDate, @QueryParam("endDate") String endDate,
+                               @QueryParam("st") String st , @QueryParam("len") String len) {
+        List<String> houseIds;
+        List<HouseDAO> houses;
+        if(initDate != null && endDate != null) {
+            houseIds = AvailabilityCache.getHouseIdByPeriodLocation(len, st, initDate, endDate);
+            houses = HousesCache.getHousesById(len, st, houseIds);
+        }
+        else if(location != null) {
+            houses = HousesCache.getHousesByLocation(len, st, location);
+        } else {
+            houses = HousesCache.getHouses(len, st);
+        }
+
+        return Response.ok(houses).build();
     }
 
     @PATCH
@@ -87,11 +103,8 @@ public class HouseResource {
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
-            Log.info("updateHouse : " + id);
-
             List<HouseDAO> results = HousesCache.getHouseById(id);
             if(results.isEmpty()) {
-                Log.info("A house with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
@@ -101,7 +114,6 @@ public class HouseResource {
             String ownerId = house.getOwnerId();
             boolean empty = UsersCache.getUserById(ownerId).isEmpty();
             if (empty) {
-                Log.info("A user with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
@@ -127,7 +139,6 @@ public class HouseResource {
             }
 
             hdb.putHouse(houseDB);
-            Log.info("House updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -143,11 +154,9 @@ public class HouseResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
         try {
-            Log.info("deleteHouse: " + id);
 
             boolean empty = HousesCache.getHouseById(id).isEmpty();
             if (empty) {
-                Log.info("A house with the given id does not exist.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
@@ -160,7 +169,6 @@ public class HouseResource {
             }
 
             hdb.delHouse(house);
-            Log.info("House deleted.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -171,41 +179,47 @@ public class HouseResource {
     }
 
     @POST
-    @Path("/{id}/available")
+    @Path("/{houseId}/available")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response availability(@CookieParam("scc:session") Cookie session, @PathParam("id") String id, HouseDAO house){
+    public Response availability(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, AvailabilityDAO availability){
         try {
-            Log.info("houseAvailable: " + id);
-
-            boolean empty = HousesCache.getHouseById(id).isEmpty();
-            if (empty) {
-                Log.info("A house with the given id does not exist.");
-                throw new WebApplicationException(Response.Status.CONFLICT);
+            List<HouseDAO> houses = HousesCache.getHouseById(houseId);
+            if (houses.isEmpty()) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            HouseDAO houseDB = HousesCache.getHouseById(id).get(0);
-            auth.checkCookieUser(session, house.getOwnerId());
+            HouseDAO houseDB = houses.get(0);
+            auth.checkCookieUser(session, houseDB.getOwnerId());
 
-            String startDate = house.getStartDate();
-            String endDate = house.getEndDate();
-            int cost = house.getCost();
-            int discount = house.getDiscount();
-
-            if (startDate != null) {
-                houseDB.setStartDate(startDate);
-            }
-            if(endDate != null){
-                houseDB.setEndDate(endDate);
-            }
-            if(cost != 0){
-                houseDB.setCost(cost);
-            }
-            if (discount <= 30){
-                houseDB.setDiscount(discount);
+            if(!availability.validate()) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            hdb.putHouse(houseDB);
+            String[] fromSplit = availability.getFromDate().split("/");
+            String[] toSplit = availability.getToDate().split("/");
+            if (fromSplit.length != 2 || toSplit.length != 2) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+            int fromMonth = Integer.parseInt(fromSplit[0]);
+            int fromYear = Integer.parseInt(fromSplit[1]);
+            int toMonth = Integer.parseInt(fromSplit[0]);
+            int toYear = Integer.parseInt(fromSplit[1]);
+            int numSlots = toMonth - fromMonth + (toYear - fromYear) * 12;
+
+            availability.setLocation(houseDB.getLocation());
+            availability.setHouseId(houseId);
+            for(int i = 0 ; i < numSlots ; i++) {
+                String id = UUID.randomUUID().toString();
+                availability.setId(id);
+                availability.setFromDate(fromMonth + "/" + fromYear);
+
+                fromMonth = fromMonth % 12 + 1;
+                fromYear = fromYear + (1 / fromMonth);
+
+                availability.setToDate(fromMonth + "/" + fromYear);
+                adb.postAvailability(availability);
+            }
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -215,13 +229,11 @@ public class HouseResource {
     }
 
     @GET
-    @Path("/{location}")
+    @Path("/discount")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listLocation(@PathParam("location") String location) {
-        Log.info("listLocation: " + location);
-
-        return Response.ok(HousesCache.getHousesByLocation(location)).build();
+    public Response listDiscounts(@QueryParam("st") String st , @QueryParam("len") String len) {
+        return Response.ok(HousesCache.getHouseDiscounts(len, st)).build();
     }
 
 

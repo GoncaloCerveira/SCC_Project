@@ -58,7 +58,7 @@ public class TestRentals {
             r.setHouseId(hId);
             r.setUserId(uId);
             Date date = dateFormat.parse("12-12-2023");
-            r.setStartDate((int) date.getTime());
+            r.setInitDate((int) date.getTime());
             Date date2 = dateFormat.parse("18-12-2023");
             r.setEndDate((int) date2.getTime());
             r.setPrice(200);

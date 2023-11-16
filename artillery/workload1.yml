@@ -86,7 +86,7 @@ scenarios:
             json: "$"
             as: "housesLst"
       - get:                          # Get generic discounted houses (assuming rentals + houses + discount initial page)
-          url: "/house?discount=1&st=0&len=20"
+          url: "/house/discount?st=0&len=20"
           name: "GET:/house/discount"
           headers:
             Accept: application/json
@@ -174,7 +174,7 @@ scenarios:
         - function: "selectHouse"
         ################################# Browse next page
         - get:                          
-            url: "/house?discount=1&st=0&len=20"
+            url: "/house/discount?st=0&len=20"
             name: "GET:/house/discount"
             headers:
               Accept: application/json

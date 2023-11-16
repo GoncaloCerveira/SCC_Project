@@ -9,16 +9,15 @@ public class UserDAO extends User implements ObjectDAO {
 	private String _rid; // added by CosmosDB, which is the id of item
 	private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-	public UserDAO(User u) {
-		super(u.getId(), u.getName(), u.getPwd());
-	}
-
-	public UserDAO(String id, String name, String pwd) {
-		super(id, name, pwd);
-	}
-
 	public UserDAO() {
+	}
 
+	public UserDAO(User u) {
+		super(u.getId(), u.getName(), u.getPwd(), u.getPhotoId());
+	}
+
+	public UserDAO(String id, String name, String pwd, String photoId) {
+		super(id, name, pwd, photoId);
 	}
 
 	@Override

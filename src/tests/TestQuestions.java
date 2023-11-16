@@ -61,7 +61,7 @@ public class TestQuestions {
             r.setHouseId(hId);
             r.setUserId(uId);
             Date date = dateFormat.parse("12-12-2023");
-            r.setStartDate((int) date.getTime());
+            r.setInitDate((int) date.getTime());
             Date date2 = dateFormat.parse("18-12-2023");
             r.setEndDate((int) date2.getTime());
             r.setPrice(200);
@@ -77,7 +77,7 @@ public class TestQuestions {
             q.setId(qId);
             q.setHouseId(hId);
             q.setOwnerId(uId);
-            q.setQuestion("Does the house have heating?");
+            q.setText("Does the house have heating?");
 
             res4 = qdb.putQuestion(q);
             System.out.println( "Put result");
@@ -96,7 +96,7 @@ public class TestQuestions {
             qdb.delQuestionById(qId);
 
             System.out.println( "Get for all ids");
-            resGet = qdb.getQuestions();
+            resGet = qdb.getQuestions("0", "20");
             for( QuestionDAO e: resGet) {
                 System.out.println( e);
             }

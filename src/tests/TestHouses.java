@@ -47,7 +47,7 @@ public class TestHouses {
             CosmosPagedIterable<HouseDAO> resGet;
 
             System.out.println( "Get for all ids");
-            resGet = hdb.getHouses();
+            resGet = hdb.getHouses("0", "20");
             for( HouseDAO e: resGet) {
                 System.out.println( e);
             }

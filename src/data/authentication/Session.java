@@ -26,4 +26,6 @@ public class Session {
     public void setName(String name) {
         this.name = name;
     }
+
+
 }

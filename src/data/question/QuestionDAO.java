@@ -9,12 +9,15 @@ public class QuestionDAO extends Question implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-    public QuestionDAO(Question q) {
-        super(q.getId(), q.getHouseId(), q.getUserId(), q.getOwnerId(), q.getQuestion(), q.getReply());
+    public QuestionDAO() {
     }
 
-    public QuestionDAO() {
+    public QuestionDAO(String id, String houseId, String userId, String ownerId, String text, String reply, boolean noAnswer) {
+        super(id, houseId, userId, ownerId, text, reply, noAnswer);
+    }
 
+    public QuestionDAO(Question q) {
+        super(q.getId(), q.getHouseId(), q.getUserId(), q.getOwnerId(), q.getText(), q.getReply(), q.isNoAnswer());
     }
 
     @Override

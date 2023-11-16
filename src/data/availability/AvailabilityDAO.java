@@ -1,4 +1,4 @@
-package data.discount;
+package data.availability;
 
 
 import data.ObjectDAO;
@@ -6,16 +6,19 @@ import data.ObjectDAO;
 /**
  * Represents a Discount, as stored in the database
  */
-public class DiscountDAO extends Discount implements ObjectDAO {
+public class AvailabilityDAO extends Availability implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-    public DiscountDAO(Discount d) {
-        super(d.getId(), d.getHouseId(), d.getStartDate(), d.getEndDate(), d.getPrice());
+    public AvailabilityDAO() {
     }
 
-    public DiscountDAO() {
+    public AvailabilityDAO(String id, String houseId, String fromDate, String toDate, String location, int cost, int discount) {
+        super(id, houseId, fromDate, toDate, location, cost, discount);
+    }
 
+    public AvailabilityDAO(Availability d) {
+        super(d.getId(), d.getHouseId(), d.getFromDate(), d.getToDate(), d.getLocation(), d.getCost(), d.getDiscount());
     }
 
     @Override

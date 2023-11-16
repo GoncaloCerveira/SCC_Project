@@ -77,14 +77,24 @@ public class CosmosDBRentalsLayer {
         return rentals.queryItems("SELECT * FROM rentals WHERE rentals.houseid=\"" + houseId + "\" AND rentals.startDate <= " + endDate + " AND rentals.endDate >= " + startDate, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
-    public CosmosPagedIterable<RentalDAO> getRentals() {
+    public CosmosPagedIterable<String> getRentalsHouseIdsByDate(String initDate, String endDate) {
         init();
-        return rentals.queryItems("SELECT * FROM rentals ", new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT rentals.houseid FROM rentals WHERE rentals.startDate >= " + initDate + " AND rentals.endDate <= " + endDate, new CosmosQueryRequestOptions(), String.class);
     }
 
-    public CosmosPagedIterable<RentalDAO> getHouseRentals(String houseId) {
+    public CosmosPagedIterable<RentalDAO> getRentals(String len, String st) {
         init();
-        return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\"", new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT * FROM rentals LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
+    public CosmosPagedIterable<RentalDAO> getHouseRentals(String len, String st, String houseId) {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
+    public CosmosPagedIterable<RentalDAO> getUserRentals(String len, String st, String userId) {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals where rentals.userId=\"" + userId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
     public void close() {

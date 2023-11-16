@@ -36,6 +36,21 @@ public class MediaResource
 		return key;
 	}
 
+	@PUT
+	@Path("/image/{key}")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String updateImage(byte[] contents, @PathParam("key") String key) {
+		BlobContainerClient containerClient = new BlobContainerClientBuilder()
+				.connectionString(AzureProperties.STORAGE_CONNECTION_STRING)
+				.containerName("images")
+				.buildClient();
+		BlobClient blob = containerClient.getBlobClient(key);
+		blob.upload(BinaryData.fromBytes(contents));
+		System.out.println( "Photo updated with key " + key);
+		return key;
+	}
+
 	@POST
 	@Path("/video/")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)

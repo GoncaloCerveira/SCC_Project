@@ -6,12 +6,15 @@ public class MediaDAO extends Media implements ObjectDAO {
     private String _rid; // added by CosmosDB, which is the id of item
     private String _ts; // added by CosmosDB, which is the timestamp of the last update to the item
 
-    public MediaDAO(String id, String itemId) {
-        super(id, itemId);
+    public MediaDAO() {
     }
 
-    public MediaDAO() {
+    public MediaDAO(Media media) {
+        super(media.getId(), media.getItemId());
+    }
 
+    public MediaDAO(String id, String itemId) {
+        super(id, itemId);
     }
 
     @Override

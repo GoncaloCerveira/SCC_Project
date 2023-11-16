@@ -4,7 +4,8 @@ public class Media {
     private String id;
     private String itemId;
 
-    public Media() {}
+    public Media() {
+    }
 
     public Media(String id, String itemId) {
         this.id = id;

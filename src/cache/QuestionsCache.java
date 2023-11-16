@@ -42,14 +42,14 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getQuestions() {
+    public static List<QuestionDAO> getQuestions(String len, String st) {
         List<QuestionDAO> questions = readFromCache("getQuestions", "", new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestions();
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getQuestions(len, st);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getQuestionById", "", questionsDB);
         }
@@ -57,17 +57,33 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getHouseQuestions(String houseId) {
+    public static List<QuestionDAO> getHouseQuestions(String len, String st, String houseId) {
         List<QuestionDAO> questions = readFromCache("getHouseQuestions", houseId, new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestions(houseId);
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestions(len, st, houseId);
         writeToCache("getHouseQuestions", houseId, questionsDB);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getHouseQuestions", houseId, questionsDB);
+        }
+
+        return questionsDB.stream().toList();
+    }
+
+    public static List<QuestionDAO> getHouseQuestionsStatus(String len, String st, String houseId) {
+        List<QuestionDAO> questions = readFromCache("getHouseQuestionsStatus", houseId, new TypeReference<>() {});
+
+        if(questions != null) {
+            return questions;
+        }
+
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestionsStatus(len, st, houseId);
+        writeToCache("getHouseQuestionsStatus", houseId, questionsDB);
+        if(questionsDB.iterator().hasNext()) {
+            writeToCache("getHouseQuestionsStatus", houseId, questionsDB);
         }
 
         return questionsDB.stream().toList();

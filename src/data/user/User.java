@@ -7,15 +7,17 @@ public class User {
 	private String id;
 	private String name;
 	private String pwd;
+	private String photoId;
 
 	public User() {
 	}
 
-	public User(String id, String name, String pwd) {
+	public User(String id, String name, String pwd, String photoId) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.pwd = pwd;
+		this.photoId = photoId;
 	}
 
 	public boolean validateCreate() {
@@ -44,6 +46,14 @@ public class User {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
+	}
+
+	public String getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(String photoId) {
+		this.photoId = photoId;
 	}
 
 

@@ -7,12 +7,8 @@ public class House {
     private String id;
     private String name;
     private String location;
-    private String description;
     private String ownerId;
-    private String startDate;
-    private String endDate;
-    private int cost;
-    private int discount;
+    private String description;
 
     public House() {}
 
@@ -20,8 +16,8 @@ public class House {
         this.id = id;
         this.name = name;
         this.location = location;
-        this.description = description;
         this.ownerId = ownerId;
+        this.description = description;
     }
 
     public boolean createValidate() {
@@ -68,36 +64,5 @@ public class House {
         this.description = description;
     }
 
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-
-    public int getCost(){
-        return this.cost;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
-
-    public int getDiscount(){
-        return this.discount;
-    }
-
-    public void setDiscount(int discount) {
-        this.discount = discount;
-    }
 
 }

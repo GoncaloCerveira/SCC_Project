@@ -45,7 +45,7 @@ scenarios:
             headers:
               Content-Type: application/json
             json:
-              id: "{{ userid }}"
+              user: "{{ userid }}"
               pwd: "{{ pwd }}"
         - loop:                            # let's create 50 users - loop ... count
           - function: "genNewHouse"         # Generate the needed information for the house

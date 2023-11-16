@@ -1,13 +1,8 @@
 package srv.resources;
 
-import cache.AuthCache;
 import cache.HousesCache;
-import cache.QuestionsCache;
 import cache.RentalsCache;
-import data.authentication.AuthResource;
 import data.house.HouseDAO;
-import data.media.MediaDAO;
-import data.question.QuestionDAO;
 import data.rental.Rental;
 import data.rental.RentalDAO;
 
@@ -17,6 +12,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import utils.AuthValidation;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -24,17 +20,17 @@ import java.util.logging.Logger;
 /**
  * Resource for managing creating, replying and listing rentals.
  */
-@Path("/house/{id}/rental")
+@Path("/house/{houseId}/rental")
 public class RentalResource {
     private final CosmosDBRentalsLayer rdb = CosmosDBRentalsLayer.getInstance();
-    private final data.authentication.AuthResource auth = new AuthResource();
+    private final AuthValidation auth = new AuthValidation();
     private static final Logger Log = Logger.getLogger(RentalResource.class.getName());
 
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId, Rental rental) {
+    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Rental rental) {
         try {
             Log.info("createRental from: " + rental.getUserId() + " for: " + houseId);
 
@@ -45,7 +41,7 @@ public class RentalResource {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
-            int startDate = rental.getStartDate();
+            int startDate = rental.getInitDate();
             int endDate = rental.getEndDate();
             boolean empty = RentalsCache.getHouseRentalByDate(houseId, startDate, endDate).isEmpty();
             if (!empty) {
@@ -72,7 +68,7 @@ public class RentalResource {
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("id") String houseId,
+    public Response update(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
                            @QueryParam("rid") String rentalId, Rental rental) {
         try {
             List<RentalDAO> results = RentalsCache.getRentalById(rentalId);
@@ -86,7 +82,7 @@ public class RentalResource {
 
             Log.info("updateRental from: " + rentalDB.getUserId() + " for: " + houseId);
 
-            int startDate = rental.getStartDate();
+            int startDate = rental.getInitDate();
             int endDate = rental.getEndDate();
 
             if(startDate > endDate) {
@@ -95,7 +91,7 @@ public class RentalResource {
             }
 
             if(startDate != 0 && rentalDB.validateStartDate(startDate)) {
-                rentalDB.setStartDate(startDate);
+                rentalDB.setInitDate(startDate);
             }
             if(endDate != 0 && rentalDB.validateEndDate(endDate)) {
                 rentalDB.setEndDate(endDate);
@@ -113,10 +109,10 @@ public class RentalResource {
     }
 
     @GET
-    @Path("/list")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@PathParam("id") String houseId) {
+    public Response listRentals(@PathParam("houseId") String houseId, @QueryParam("st") String st , @QueryParam("len") String len) {
         Log.info("listRentals for: " + houseId);
 
         List<HouseDAO> results = HousesCache.getHouseById(houseId);
@@ -125,7 +121,7 @@ public class RentalResource {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
-        List<RentalDAO> rentals = RentalsCache.getHouseRentals(houseId);
+        List<RentalDAO> rentals = RentalsCache.getHouseRentals(len, st, houseId);
         Log.info("Rentals retrieved.");
         return Response.ok(rentals).build();
     }

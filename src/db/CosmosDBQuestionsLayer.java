@@ -80,14 +80,19 @@ public class CosmosDBQuestionsLayer {
         return questions.queryItems("SELECT * FROM questions WHERE questions.houseId=\"" + houseId + "\" AND questions.userID=\"" + userId + "\"", new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
-    public CosmosPagedIterable<QuestionDAO> getQuestions() {
+    public CosmosPagedIterable<QuestionDAO> getQuestions(String len, String st) {
         init();
-        return questions.queryItems("SELECT * FROM questions ", new CosmosQueryRequestOptions(), QuestionDAO.class);
+        return questions.queryItems("SELECT * FROM questions LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
-    public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String houseId) {
+    public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String len, String st, String houseId) {
         init();
-        return questions.queryItems("SELECT * FROM rentals where questions.houseid=\"" + houseId + "\"", new CosmosQueryRequestOptions(), QuestionDAO.class);
+        return questions.queryItems("SELECT * FROM questions where questions.houseid=\"" + houseId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), QuestionDAO.class);
+    }
+
+    public CosmosPagedIterable<QuestionDAO> getHouseQuestionsStatus(String len, String st, String noAnswer) {
+        init();
+        return questions.queryItems("SELECT * FROM questions where questions.noAnswer=\"" + noAnswer + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
     public void close() {

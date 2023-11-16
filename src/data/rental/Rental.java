@@ -7,23 +7,24 @@ public class Rental {
     private String id;
     private String houseId;
     private String userId;
-    private int startDate;
+    private int initDate;
     private int endDate;
     private int price;
 
-    public Rental() {}
+    public Rental() {
+    }
 
-    public Rental(String id, String houseId, String userId, int startDate, int endDate, int price) {
+    public Rental(String id, String houseId, String userId, int initDate, int endDate, int price) {
         this.id = id;
         this.houseId = houseId;
         this.userId = userId;
-        this.startDate = startDate;
+        this.initDate = initDate;
         this.endDate = endDate;
         this.price = price;
     }
 
     public boolean validateCreate() {
-        return this.id != null && this.startDate != 0 && this.endDate != 0 && this.price != 0 && this.startDate <= this.endDate;
+        return this.id != null && this.initDate != 0 && this.endDate != 0 && this.price != 0 && this.initDate <= this.endDate;
     }
 
     public boolean validateStartDate(int startDate) {
@@ -31,7 +32,7 @@ public class Rental {
     }
 
     public boolean validateEndDate(int endDate) {
-        return endDate >= this.startDate;
+        return endDate >= this.initDate;
     }
 
     public String getId() {
@@ -58,12 +59,12 @@ public class Rental {
         this.userId = userId;
     }
 
-    public int getStartDate() {
-        return startDate;
+    public int getInitDate() {
+        return initDate;
     }
 
-    public void setStartDate(int startDate) {
-        this.startDate = startDate;
+    public void setInitDate(int initDate) {
+        this.initDate = initDate;
     }
 
     public int getEndDate() {

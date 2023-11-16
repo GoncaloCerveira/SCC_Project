@@ -1,13 +1,8 @@
 package srv.resources;
 
-import cache.AuthCache;
-import cache.HousesCache;
-import cache.MediaCache;
-import cache.UsersCache;
-import data.authentication.AuthResource;
+import cache.*;
 import data.authentication.Session;
-import data.media.MediaDAO;
-import data.user.Login;
+import data.authentication.Login;
 import data.user.User;
 import data.user.UserDAO;
 
@@ -19,6 +14,7 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import utils.AuthValidation;
 import utils.MultiPartFormData;
 
 import java.util.List;
@@ -31,7 +27,7 @@ public class UserResource {
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
     private final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
     private final MediaResource media = new MediaResource();
-    private final data.authentication.AuthResource auth = new AuthResource();
+    private final AuthValidation auth = new AuthValidation();
     private static final Logger Log = Logger.getLogger(UserResource.class.getName());
 
     @POST
@@ -40,7 +36,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response auth(Login login) {
         boolean pwdOk = false;
-        String id = login.getId();
+        String id = login.getUser();
 
         UserDAO user = UsersCache.getUserById(id).get(0);
         if (Objects.equals(login.getPwd(), user.getPwd())){
@@ -90,7 +86,7 @@ public class UserResource {
         }
 
         String mediaId = media.uploadImage(contents);
-        mdb.postMedia(new MediaDAO(mediaId, user.getId()));
+        user.setPhotoId(mediaId);
 
         udb.postUser(new UserDAO(user));
         Log.info("User created.");
@@ -129,8 +125,7 @@ public class UserResource {
                 userDB.setPwd(pwd);
             }
             if(contents.length > 0) {
-                String mediaId = media.uploadImage(contents);
-                mdb.postMedia(new MediaDAO(mediaId, id));
+                media.updateImage(contents, userDB.getPhotoId());
             }
 
             udb.putUser(userDB);
@@ -159,10 +154,7 @@ public class UserResource {
 
             UserDAO userDB = results.get(0);
 
-            for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
-                media.deleteFile("images", mediaDAO.getId());
-                mdb.delMedia(mediaDAO);
-            }
+            media.deleteFile("images", userDB.getPhotoId());
 
             udb.delUser(userDB);
             return Response.ok().build();
@@ -175,10 +167,11 @@ public class UserResource {
     }
 
     @GET
-    @Path("/{id}/list")
+    @Path("/{id}/houses")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listHouses(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
+    public Response listHouses(@CookieParam("scc:session") Cookie session, @PathParam("id") String id,
+                               @QueryParam("st") String st , @QueryParam("len") String len) {
         try{
             auth.checkCookieUser(session, id);
 
@@ -187,7 +180,30 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
 
-            return Response.ok(HousesCache.getUserHouses(id)).build();
+            return Response.ok(HousesCache.getUserHouses(len, st, id)).build();
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+
+    }
+
+    @GET
+    @Path("/{id}/rentals")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listRentals(@CookieParam("scc:session") Cookie session, @PathParam("id") String id,
+                                @QueryParam("st") String st , @QueryParam("len") String len) {
+        try{
+            auth.checkCookieUser(session, id);
+
+            List<UserDAO> results = UsersCache.getUserById(id);
+            if(results.isEmpty()) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+
+            return Response.ok(RentalsCache.getUserRentals(len, st, id)).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {

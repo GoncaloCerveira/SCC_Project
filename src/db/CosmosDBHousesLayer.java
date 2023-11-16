@@ -10,6 +10,8 @@ import com.azure.cosmos.util.CosmosPagedIterable;
 import data.house.HouseDAO;
 import utils.AzureProperties;
 
+import java.util.List;
+
 public class CosmosDBHousesLayer {
 	private static CosmosDBHousesLayer instance;
 
@@ -70,25 +72,29 @@ public class CosmosDBHousesLayer {
 		return houses.queryItems("SELECT * FROM houses WHERE houses.id=\"" + id + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
-	public CosmosPagedIterable<HouseDAO> getHouses() {
+	public CosmosPagedIterable<HouseDAO> getHousesById(String len, String st, List<String> ids) {
 		init();
-		return houses.queryItems("SELECT * FROM houses ", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses WHERE houses.ids IN " + ids + " LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
-	public CosmosPagedIterable<HouseDAO> getUserHouses(String ownerId) {
+	public CosmosPagedIterable<HouseDAO> getHouses(String len, String st) {
 		init();
-		return houses.queryItems("SELECT * FROM houses WHERE houses.ownerId=\"" + ownerId + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
-	public CosmosPagedIterable<HouseDAO> getHousesByLocation(String location) {
+	public CosmosPagedIterable<HouseDAO> getUserHouses(String len, String st, String ownerId) {
 		init();
-		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses WHERE houses.ownerId=\"" + ownerId + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
-	public CosmosPagedIterable<HouseDAO> getHousesByLocationForPeriod(String location, String startDate, String endDate) {
+	public CosmosPagedIterable<HouseDAO> getHousesByLocation(String len, String st, String location) {
 		init();
-		// TODO
-		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"", new CosmosQueryRequestOptions(), HouseDAO.class);
+		return houses.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\" LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
+	}
+
+	public CosmosPagedIterable<HouseDAO> getHouseDiscounts(String len, String st) {
+		init();
+		return houses.queryItems("SELECT * FROM houses WHERE houses.discount!=0 LIMIT " + st + " OFFSET " + len, new CosmosQueryRequestOptions(), HouseDAO.class);
 	}
 
 	public void close() {

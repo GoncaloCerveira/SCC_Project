@@ -8,26 +8,25 @@ public class Question {
     private String houseId;
     private String userId;
     private String ownerId;
-    private String question;
+    private String text;
     private String reply;
+    private boolean noAnswer;
 
-    public Question() {}
+    public Question() {
+    }
 
-    public Question(String id, String houseId, String userId, String ownerId, String question, String reply) {
+    public Question(String id, String houseId, String userId, String ownerId, String text, String reply, boolean noAnswer) {
         this.id = id;
         this.houseId = houseId;
         this.userId = userId;
         this.ownerId = ownerId;
-        this.question = question;
+        this.text = text;
         this.reply = reply;
+        this.noAnswer = noAnswer;
     }
 
     public boolean validateCreate() {
-        return this.id != null && this.houseId != null && this.ownerId != null && this.question != null;
-    }
-
-    public boolean validateReply() {
-        return this.reply != null;
+        return this.id != null && this.houseId != null && this.ownerId != null && this.text != null;
     }
 
     public String getId() {
@@ -62,12 +61,12 @@ public class Question {
         this.ownerId = ownerId;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getText() {
+        return text;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getReply() {
@@ -76,6 +75,14 @@ public class Question {
 
     public void setReply(String reply) {
         this.reply = reply;
+    }
+
+    public boolean isNoAnswer() {
+        return noAnswer;
+    }
+
+    public void setNoAnswer(boolean noAnswer) {
+        this.noAnswer = noAnswer;
     }
 
 
