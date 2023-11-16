@@ -4,7 +4,8 @@ public class Session {
     private String id;
     private String name;
 
-    public Session() {}
+    public Session() {
+    }
 
     public Session(String id, String name) {
         this.id = id;

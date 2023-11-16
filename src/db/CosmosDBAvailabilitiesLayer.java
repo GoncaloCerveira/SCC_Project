@@ -66,7 +66,7 @@ public class CosmosDBAvailabilitiesLayer {
 
     public CosmosPagedIterable<String> getHouseIdByPeriodLocation(String len, String st, String initDate, String endDate) {
         init();
-        return availabilities.queryItems("SELECT availabiliries.houseId FROM availabilities WHERE availabilities.fromDate >= " + initDate + " AND rentals.endDate <= " + endDate + "\" LIMIT " + len + " OFFSET " + st, new CosmosQueryRequestOptions(), String.class);
+        return availabilities.queryItems("SELECT availabilities.houseId FROM availabilities WHERE availabilities.fromDate >= " + initDate + " AND rentals.endDate <= " + endDate + "\" LIMIT " + len + " OFFSET " + st, new CosmosQueryRequestOptions(), String.class);
     }
 
     public void close() {

@@ -46,7 +46,7 @@ public class AzureManagement {
 	static final String[] BLOB_CONTAINERS = { "images" };	// TODO: Containers to add to the blob storage
 
 	static final String[][] COSMOS_COLLECTIONS = { { "houses", "/location" }, { "availabilities", "/houseId" }, { "questions", "/ownerId" },
-			{ "rentals", "/houseId" }, { "users", "/id" }, { "media", "/itemId" }};
+			{ "rentals", "/houseId" }, { "users", "/id" }, { "media", "/itemId" }, { "sessions", "/name"}};
 
 	static final Region[] REGIONS = new Region[] { Region.EUROPE_WEST}; // Define the regions to deploy resources here
 	

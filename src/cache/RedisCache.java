@@ -11,7 +11,7 @@ import utils.AzureProperties;
 public class RedisCache {
     private static JedisPool instance;
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static boolean USE_CACHE = true;
+    public static boolean USE_CACHE = true;
 
     private synchronized static JedisPool getCachePool() {
         if( instance != null)
