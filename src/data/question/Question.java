@@ -5,7 +5,7 @@ package data.question;
  */
 public class Question {
     private String id;
-    private String houseId;
+    private String house;
     private String user;
     private String owner;
     private String text;
@@ -15,9 +15,9 @@ public class Question {
     public Question() {
     }
 
-    public Question(String id, String houseId, String user, String owner, String text, String reply, boolean noAnswer) {
+    public Question(String id, String house, String user, String owner, String text, String reply, boolean noAnswer) {
         this.id = id;
-        this.houseId = houseId;
+        this.house = house;
         this.user = user;
         this.owner = owner;
         this.text = text;
@@ -26,7 +26,7 @@ public class Question {
     }
 
     public boolean validateCreate() {
-        return this.id != null && this.houseId != null && this.owner != null && this.text != null;
+        return this.id != null && this.house != null && this.owner != null && this.text != null;
     }
 
     public String getId() {
@@ -37,12 +37,12 @@ public class Question {
         this.id = id;
     }
 
-    public String getHouseId() {
-        return houseId;
+    public String getHouse() {
+        return house;
     }
 
-    public void setHouseId(String houseId) {
-        this.houseId = houseId;
+    public void setHouse(String house) {
+        this.house = house;
     }
 
     public String getUser() {
