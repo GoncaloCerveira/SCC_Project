@@ -220,12 +220,11 @@ function selectHouse(context, events, done) {
  */
 function selectRental(context, events, done) {
 	delete context.vars.value;
-	if( typeof context.vars.user !== 'undefined' && typeof context.vars.rentalsLst !== 'undefined' && 
-			context.vars.rentalsLst.constructor == Array && context.vars.rentalsLst.length > 0) {
-		let rental = context.vars.rentalsLst.sample()
+	if( typeof context.vars.user !== 'undefined' && typeof context.vars.rentalLst !== 'undefined' &&
+			context.vars.rentalLst.constructor == Array && context.vars.rentalLst.length > 0) {
+		let rental = context.vars.rentalLst.sample()
 		context.vars.rentalId = rental.id;
-		context.vars.owner = rental.owner;
-		context.vars.houseId = rental.house;
+		context.vars.houseId = rental.houseId;
 	} else
 		delete context.vars.rentalId
 	return done()

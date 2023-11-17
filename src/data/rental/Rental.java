@@ -17,12 +17,12 @@ public class Rental {
     public Rental() {
     }
 
-    public Rental(String id, String houseId, String user, String fromDate, String toDate, String location,
-                  int cost, int discount, boolean free) {
+    public Rental(String id, String houseId, String user, String fromDate, String toDate, String location, int cost, int discount, boolean free) {
         this.id = id;
         this.houseId = houseId;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.location = location;
         this.cost = cost;
         this.discount = discount;
         this.free = free;

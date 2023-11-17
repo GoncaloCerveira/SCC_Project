@@ -72,7 +72,7 @@ public class UserResource {
 
         Log.info("createUser : " + user.getId());
 
-        if(!user.validateCreate() || contents.length == 0) {
+        if(!user.validateCreate() || contents.length <= 2) {
             Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
@@ -122,7 +122,7 @@ public class UserResource {
             if(pwd != null) {
                 userDB.setPwd(pwd);
             }
-            if(contents.length > 0) {
+            if(contents.length > 2) {
                 media.updateImage(contents, userDB.getPhotoId());
             }
 

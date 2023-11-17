@@ -30,7 +30,7 @@ public class RentalResource {
     @Path("/{rentalId}/renter")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Rental rental,
+    public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
                            @PathParam("rentalId") String rentalId) {
         try {
             auth.checkCookieUser(session, null);
@@ -44,7 +44,7 @@ public class RentalResource {
             rentalDB.setUser(session.getName());
             rentalDB.setFree(false);
 
-            rdb.postRental(rentalDB);
+            rdb.putRental(rentalDB);
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -58,11 +58,19 @@ public class RentalResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSlots(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
-                             @QueryParam("free") boolean free) {
+    public Response listRentals(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
+                                @QueryParam("st") String st , @QueryParam("len") String len, @QueryParam("free") boolean free) {
         try {
             auth.checkCookieUser(session, null);
-            return Response.ok(RentalsCache.getFreeSlots()).build();
+
+            List<RentalDAO> rentals;
+            if(st != null && len != null) {
+                rentals = RentalsCache.getHouseRentals(st, len, houseId);
+            } else {
+                rentals = RentalsCache.getFreeSlots();
+            }
+
+            return Response.ok(rentals).build();
         } catch (WebApplicationException e) {
             throw e;
         } catch(Exception e) {
@@ -94,23 +102,6 @@ public class RentalResource {
             throw new InternalServerErrorException(e);
         }
 
-    }
-
-    @GET
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response listRentals(@PathParam("houseId") String houseId,
-                                @QueryParam("st") String st , @QueryParam("len") String len) {
-        Log.info("listRentals for: " + houseId);
-
-        List<HouseDAO> results = HousesCache.getHouseById(houseId);
-        if (results.isEmpty()) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        List<RentalDAO> rentals = RentalsCache.getHouseRentals(st, len, houseId);
-        return Response.ok(rentals).build();
     }
 
 

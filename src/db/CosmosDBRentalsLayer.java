@@ -60,7 +60,7 @@ public class CosmosDBRentalsLayer {
 
     public CosmosItemResponse<RentalDAO> putRental(RentalDAO rental) {
         init();
-        CosmosItemResponse<RentalDAO> res = rentals.replaceItem(rental, rental.getId(), new PartitionKey(rental.getId()), new CosmosItemRequestOptions());
+        CosmosItemResponse<RentalDAO> res = rentals.replaceItem(rental, rental.getId(), new PartitionKey(rental.getHouseId()), new CosmosItemRequestOptions());
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
@@ -86,6 +86,11 @@ public class CosmosDBRentalsLayer {
         return rentals.queryItems("SELECT * FROM rentals OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
+    public CosmosPagedIterable<RentalDAO> getRentalsNonPaged() {
+        init();
+        return rentals.queryItems("SELECT * FROM rentals", new CosmosQueryRequestOptions(), RentalDAO.class);
+    }
+
     public CosmosPagedIterable<RentalDAO> getHouseRentals(String st, String len, String houseId) {
         init();
         return rentals.queryItems("SELECT * FROM rentals where rentals.houseid=\"" + houseId + "\" OFFSET " + st + " LIMIT " + len, new CosmosQueryRequestOptions(), RentalDAO.class);
@@ -98,7 +103,7 @@ public class CosmosDBRentalsLayer {
 
     public CosmosPagedIterable<RentalDAO> getFreeSlots() {
         init();
-        return rentals.queryItems("SELECT * FROM rentals WHERE free = true", new CosmosQueryRequestOptions(), RentalDAO.class);
+        return rentals.queryItems("SELECT * FROM rentals WHERE rentals.free = true", new CosmosQueryRequestOptions(), RentalDAO.class);
     }
 
     public CosmosPagedIterable<String> getHouseIdByPeriodLocation(String st, String len, String initDate, String endDate) {

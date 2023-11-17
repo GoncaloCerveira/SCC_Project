@@ -42,7 +42,7 @@ public class HouseResource {
             String ownerId = house.getOwnerId();
             auth.checkCookieUser(session, ownerId);
 
-            if (!house.createValidate() || contents.length == 0) {
+            if (!house.createValidate() || contents.length <= 2) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
@@ -131,7 +131,7 @@ public class HouseResource {
             if (description != null) {
                 houseDB.setDescription(description);
             }
-            if (contents.length > 0) {
+            if (contents.length > 2) {
                 String mediaId = media.uploadImage(contents);
                 mdb.postMedia(new MediaDAO(mediaId, id));
             }
@@ -205,8 +205,10 @@ public class HouseResource {
             int toYear = Integer.parseInt(toSplit[1]);
             int numSlots = toMonth - fromMonth + (toYear - fromYear) * 12;
 
-            rental.setLocation(houseDB.getLocation());
+
             rental.setHouseId(houseId);
+            rental.setLocation(houseDB.getLocation());
+            rental.setFree(true);
             for(int i = 0 ; i < numSlots ; i++) {
                 String id = UUID.randomUUID().toString();
                 rental.setId(id);
