@@ -5,7 +5,7 @@ package data.rental;
  */
 public class Rental {
     private String id;
-    private String houseId;
+    private String house;
     private String user;
     private String fromDate;
     private String toDate;
@@ -17,9 +17,9 @@ public class Rental {
     public Rental() {
     }
 
-    public Rental(String id, String houseId, String user, String fromDate, String toDate, String location, int cost, int discount, boolean free) {
+    public Rental(String id, String house, String user, String fromDate, String toDate, String location, int cost, int discount, boolean free) {
         this.id = id;
-        this.houseId = houseId;
+        this.house = house;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.location = location;
@@ -40,12 +40,12 @@ public class Rental {
         this.id = id;
     }
 
-    public String getHouseId() {
-        return houseId;
+    public String getHouse() {
+        return house;
     }
 
-    public void setHouseId(String houseId) {
-        this.houseId = houseId;
+    public void setHouse(String house) {
+        this.house = house;
     }
 
     public String getUser() {

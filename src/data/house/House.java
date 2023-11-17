@@ -7,21 +7,21 @@ public class House {
     private String id;
     private String name;
     private String location;
-    private String ownerId;
+    private String owner;
     private String description;
 
     public House() {}
 
-    public House(String id, String name, String location, String ownerId, String description) {
+    public House(String id, String name, String location, String owner, String description) {
         this.id = id;
         this.name = name;
         this.location = location;
-        this.ownerId = ownerId;
+        this.owner = owner;
         this.description = description;
     }
 
     public boolean createValidate() {
-        return this.name!=null && this.location!=null && this.ownerId !=null;
+        return this.name!=null && this.location!=null && this.owner !=null;
     }
 
     public String getId() {
@@ -48,12 +48,12 @@ public class House {
         this.location = location;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getDescription() {

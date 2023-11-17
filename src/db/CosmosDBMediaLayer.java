@@ -40,10 +40,16 @@ public class CosmosDBMediaLayer {
 
     }
 
+    public CosmosItemResponse<Object> delMediaById(String id) {
+        init();
+        return media.deleteItem(id, new CosmosItemRequestOptions());
+    }
+
     public CosmosItemResponse<Object> delMedia(MediaDAO m) {
         init();
         return media.deleteItem(m, new CosmosItemRequestOptions());
     }
+
     public CosmosItemResponse<MediaDAO> postMedia(MediaDAO m) {
         init();
         CosmosItemResponse<MediaDAO> res = media.createItem(m);
@@ -52,9 +58,13 @@ public class CosmosDBMediaLayer {
         else throw new NotFoundException();
     }
 
-    public CosmosPagedIterable<MediaDAO> getMediaByItemId(String itemId) {
+    public CosmosPagedIterable<MediaDAO> getItemMedia(String st, String len, String itemId) {
         init();
-        return media.queryItems("SELECT * FROM media WHERE media.itemId=\"" + itemId + "\"", new CosmosQueryRequestOptions(), MediaDAO.class);
+        String query = "SELECT * FROM media WHERE media.item=\"" + itemId + "\"";
+        if(st != null && len != null) {
+            query = query + " OFFSET " + st + " LIMIT " + len;
+        }
+        return media.queryItems(query, new CosmosQueryRequestOptions(), MediaDAO.class);
     }
 
     public void close() {

@@ -10,7 +10,7 @@ public class MediaDAO extends Media implements ObjectDAO {
     }
 
     public MediaDAO(Media media) {
-        super(media.getId(), media.getItemId());
+        super(media.getId(), media.getItem());
     }
 
     public MediaDAO(String id, String itemId) {

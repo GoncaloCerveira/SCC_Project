@@ -28,7 +28,7 @@ public class ClearContainers {
     private static void clearUsers() {
         System.out.println("Clear Users");
         int count = 0;
-        for (UserDAO userDAO : udb.getUsers()) {
+        for (UserDAO userDAO : udb.getUsers(null, null)) {
             udb.delUser(userDAO);
             media.deleteFile("images", userDAO.getPhotoId());
 
@@ -43,9 +43,9 @@ public class ClearContainers {
     private static void clearHouses() {
         System.out.println("Clear Houses");
         int count = 0;
-        for (HouseDAO houseDAO : hdb.getHousesNonPaged()) {
+        for (HouseDAO houseDAO : hdb.getHouses(null, null)) {
             hdb.delHouse(houseDAO);
-            for (MediaDAO mediaDAO : mdb.getMediaByItemId(houseDAO.getId())) {
+            for (MediaDAO mediaDAO : mdb.getItemMedia(null, null, houseDAO.getId())) {
                 media.deleteFile("images", mediaDAO.getId());
             }
             count++;
@@ -59,7 +59,7 @@ public class ClearContainers {
     private static void clearRentals() {
         System.out.println("Clear Rentals");
         int count = 0;
-        for(RentalDAO rentalDAO : rdb.getRentalsNonPaged()) {
+        for(RentalDAO rentalDAO : rdb.getRentals(null, null)) {
             rdb.delRental(rentalDAO);
 
             count++;

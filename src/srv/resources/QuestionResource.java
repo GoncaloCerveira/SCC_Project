@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 import utils.AuthValidation;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Resource for managing creating, replying and listing questions.
@@ -24,7 +23,6 @@ import java.util.logging.Logger;
 public class QuestionResource {
     private final CosmosDBQuestionsLayer qdb = CosmosDBQuestionsLayer.getInstance();
     private final AuthValidation auth = new AuthValidation();
-    private static final Logger Log = Logger.getLogger(QuestionResource.class.getName());
 
     @POST
     @Path("/")
@@ -32,19 +30,15 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Question question) {
         try {
-            Log.info("createQuestion from: " + question.getUser() + " for: " + houseId);
-
             auth.checkCookieUser(session, null);
             String userId = session.getName();
 
             if (!question.validateCreate()) {
-                Log.info("Null information was given");
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
             boolean empty = QuestionsCache.getQuestionByHouseAndUser(houseId, userId).isEmpty();
             if (!empty) {
-                Log.info("Question already exists.");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
@@ -52,7 +46,6 @@ public class QuestionResource {
             question.setReply(null);
 
             qdb.postQuestion(new QuestionDAO(question));
-            Log.info("Question created.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -66,18 +59,14 @@ public class QuestionResource {
     @Path("/{questionId}/reply")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response replyQuestion(@PathParam("houseId") String houseId, @PathParam("questionId") String questionId,
+    public Response reply(@PathParam("houseId") String houseId, @PathParam("questionId") String questionId,
                                   @BodyParam("reply") String reply) {
-        Log.info("replyQuestion for: " + houseId);
-
         List<HouseDAO> hResults = HousesCache.getHouseById(houseId);
         if (hResults.isEmpty()) {
-            Log.info("House does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         List<QuestionDAO> qResults = QuestionsCache.getQuestionById(questionId);
         if (qResults.isEmpty()) {
-            Log.info("Question does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
@@ -88,7 +77,6 @@ public class QuestionResource {
         questionDB.setReply(reply);
         qdb.putQuestion(questionDB);
 
-        Log.info("Question replied.");
         return Response.ok(questionDB).build();
     }
 
@@ -96,23 +84,19 @@ public class QuestionResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listQuestions(@PathParam("houseId") String houseId, @QueryParam("noanswer") String noAnswer,
-                                  @QueryParam("st") String st , @QueryParam("len") String len) {
-        Log.info("listUnanswered for: " + houseId);
-
+    public Response list(@PathParam("houseId") String houseId, @QueryParam("noanswer") String noAnswer,
+                         @QueryParam("st") String st , @QueryParam("len") String len) {
         List<HouseDAO> results = HousesCache.getHouseById(houseId);
         if (results.isEmpty()) {
-            Log.info("House does not exist.");
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
         List<QuestionDAO> questions;
         if(noAnswer != null) {
-            questions = QuestionsCache.getHouseQuestionsStatus(st, len, houseId);
+            questions = QuestionsCache.getHouseQuestionsByStatus(st, len, houseId);
         } else {
             questions = QuestionsCache.getHouseQuestions(st, len, houseId);
         }
-        Log.info("Rentals retrieved.");
         return Response.ok(questions).build();
     }
 

@@ -39,7 +39,7 @@ public class HouseResource {
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
-            String ownerId = house.getOwnerId();
+            String ownerId = house.getOwner();
             auth.checkCookieUser(session, ownerId);
 
             if (!house.createValidate() || contents.length <= 2) {
@@ -67,29 +67,7 @@ public class HouseResource {
 
     }
 
-    @GET
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response listHouses(@QueryParam("location") String location,
-                               @QueryParam("initDate") String initDate, @QueryParam("endDate") String endDate,
-                               @QueryParam("st") String st , @QueryParam("len") String len) {
-        List<String> houseIds;
-        List<HouseDAO> houses;
-        if(initDate != null && endDate != null) {
-            houseIds = RentalsCache.getHouseIdByPeriodLocation(st, len, initDate, endDate);
-            houses = HousesCache.getHousesById(st, len, houseIds);
-        }
-        else if(location != null) {
-            houses = HousesCache.getHousesByLocation(st, len, location);
-        } else {
-            houses = HousesCache.getHouses(st, len);
-        }
-
-        return Response.ok(houses).build();
-    }
-
-    @PATCH
+    @PUT
     @Path("/{id}/update")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -107,9 +85,9 @@ public class HouseResource {
             }
 
             HouseDAO houseDB = results.get(0);
-            auth.checkCookieUser(session, houseDB.getOwnerId());
+            auth.checkCookieUser(session, houseDB.getOwner());
 
-            String ownerId = house.getOwnerId();
+            String ownerId = house.getOwner();
             boolean empty = UsersCache.getUserById(ownerId).isEmpty();
             if (empty) {
                 throw new WebApplicationException(Response.Status.CONFLICT);
@@ -126,7 +104,7 @@ public class HouseResource {
                 houseDB.setLocation(location);
             }
             if (ownerId != null) {
-                houseDB.setOwnerId(ownerId);
+                houseDB.setOwner(ownerId);
             }
             if (description != null) {
                 houseDB.setDescription(description);
@@ -147,22 +125,22 @@ public class HouseResource {
     }
 
     @DELETE
-    @Path("/{id}/delete")
+    @Path("/{houseId}/delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("id") String id) {
+    public Response delete(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId) {
         try {
 
-            boolean empty = HousesCache.getHouseById(id).isEmpty();
+            boolean empty = HousesCache.getHouseById(houseId).isEmpty();
             if (empty) {
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
 
-            HouseDAO house = HousesCache.getHouseById(id).get(0);
+            HouseDAO house = HousesCache.getHouseById(houseId).get(0);
 
-            auth.checkCookieUser(session, house.getOwnerId());
+            auth.checkCookieUser(session, house.getOwner());
 
-            for (MediaDAO mediaDAO : MediaCache.getMediaByItemId(id)) {
+            for (MediaDAO mediaDAO : MediaCache.getItemMedia(null, null, houseId)) {
                 media.deleteFile("images", mediaDAO.getId());
             }
 
@@ -188,7 +166,7 @@ public class HouseResource {
             }
 
             HouseDAO houseDB = houses.get(0);
-            auth.checkCookieUser(session, houseDB.getOwnerId());
+            auth.checkCookieUser(session, houseDB.getOwner());
 
             if(!rental.validate()) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -206,7 +184,7 @@ public class HouseResource {
             int numSlots = toMonth - fromMonth + (toYear - fromYear) * 12;
 
 
-            rental.setHouseId(houseId);
+            rental.setHouse(houseId);
             rental.setLocation(houseDB.getLocation());
             rental.setFree(true);
             for(int i = 0 ; i < numSlots ; i++) {
@@ -229,11 +207,33 @@ public class HouseResource {
     }
 
     @GET
+    @Path("/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response list(@QueryParam("location") String location,
+                         @QueryParam("initDate") String initDate, @QueryParam("endDate") String endDate,
+                         @QueryParam("st") String st , @QueryParam("len") String len) {
+        List<String> houseIds;
+        List<HouseDAO> houses;
+        if(initDate != null && endDate != null) {
+            houseIds = RentalsCache.getHouseIdsByPeriodLocation(st, len, initDate, endDate, location);
+            houses = HousesCache.getHousesById(st, len, houseIds);
+        }
+        else if(location != null) {
+            houses = HousesCache.getHousesByLocation(st, len, location);
+        } else {
+            houses = HousesCache.getHouses(st, len);
+        }
+
+        return Response.ok(houses).build();
+    }
+
+    @GET
     @Path("/discount")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response listDiscounts(@QueryParam("st") String st , @QueryParam("len") String len) {
-        return Response.ok(HousesCache.getHouseDiscounts(st, len)).build();
+        return Response.ok(HousesCache.getHousesOnDiscount(st, len)).build();
     }
 
 

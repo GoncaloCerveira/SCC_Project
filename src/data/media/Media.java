@@ -2,14 +2,14 @@ package data.media;
 
 public class Media {
     private String id;
-    private String itemId;
+    private String item;
 
     public Media() {
     }
 
-    public Media(String id, String itemId) {
+    public Media(String id, String item) {
         this.id = id;
-        this.itemId = itemId;
+        this.item = item;
     }
 
     public String getId() {
@@ -20,12 +20,12 @@ public class Media {
         this.id = id;
     }
 
-    public String getItemId() {
-        return itemId;
+    public String getItem() {
+        return item;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
+    public void setItem(String item) {
+        this.item = item;
     }
 
 

@@ -17,7 +17,7 @@ public class HouseDAO extends House implements ObjectDAO {
     }
 
     public HouseDAO(House h) {
-        super(h.getId(), h.getName(), h.getLocation(),h.getOwnerId(), h.getDescription());
+        super(h.getId(), h.getName(), h.getLocation(),h.getOwner(), h.getDescription());
     }
 
     @Override

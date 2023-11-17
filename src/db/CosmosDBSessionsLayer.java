@@ -57,7 +57,7 @@ public class CosmosDBSessionsLayer {
 
     public CosmosItemResponse<RentalDAO> putSession(RentalDAO availability) {
         init();
-        CosmosItemResponse<RentalDAO> res = sessions.replaceItem(availability, availability.getId(), new PartitionKey(availability.getHouseId()), new CosmosItemRequestOptions());
+        CosmosItemResponse<RentalDAO> res = sessions.replaceItem(availability, availability.getId(), new PartitionKey(availability.getHouse()), new CosmosItemRequestOptions());
         if(res.getStatusCode()<300)
             return res;
         else throw new NotFoundException();
@@ -65,7 +65,8 @@ public class CosmosDBSessionsLayer {
 
     public CosmosPagedIterable<SessionDAO> getSessionById(String uid) {
         init();
-        return sessions.queryItems("SELECT * FROM sessions WHERE sessions.id=\"" + uid + "\"", new CosmosQueryRequestOptions(), SessionDAO.class);
+        String query = "SELECT * FROM sessions WHERE sessions.id=\"" + uid + "\"";
+        return sessions.queryItems(query, new CosmosQueryRequestOptions(), SessionDAO.class);
     }
 
     public void close() {

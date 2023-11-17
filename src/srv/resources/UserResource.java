@@ -1,8 +1,6 @@
 package srv.resources;
 
 import cache.*;
-import data.authentication.Session;
-import data.authentication.Login;
 import data.user.User;
 import data.user.UserDAO;
 
@@ -11,53 +9,17 @@ import db.CosmosDBUsersLayer;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import utils.AuthValidation;
 import utils.MultiPartFormData;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 @Path("/user")
 public class UserResource {
     private final CosmosDBUsersLayer udb = CosmosDBUsersLayer.getInstance();
     private final MediaResource media = new MediaResource();
     private final AuthValidation auth = new AuthValidation();
-    private static final Logger Log = Logger.getLogger(UserResource.class.getName());
-
-    @POST
-    @Path("/auth")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response auth(Login login) {
-        boolean pwdOk = false;
-        String id = login.getUser();
-
-        UserDAO user = UsersCache.getUserById(id).get(0);
-        if (Objects.equals(login.getPwd(), user.getPwd())){
-            pwdOk = true;
-        }
-
-        if( pwdOk) {
-            String uid = UUID.randomUUID().toString();
-            NewCookie cookie = new NewCookie.Builder("scc:session")
-                    .value(uid)
-                    .path("/")
-                    .comment("sessionid")
-                    .maxAge(3600)
-                    .secure(false)
-                    .httpOnly(true)
-                    .build();
-            AuthCache.putSession(new Session(uid,id));
-            return Response.ok().cookie(cookie).build();
-        } else {
-            throw new NotAuthorizedException("Incorrect login");
-        }
-
-    }
 
     @POST
     @Path("/")
@@ -70,16 +32,12 @@ public class UserResource {
         User user = mpfd.getItem();
         byte[] contents = mpfd.getMedia();
 
-        Log.info("createUser : " + user.getId());
-
         if(!user.validateCreate() || contents.length <= 2) {
-            Log.info("Null information was given");
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         boolean empty = UsersCache.getUserById(user.getId()).isEmpty();
         if(!empty) {
-            Log.info("User already exists.");
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
@@ -87,7 +45,6 @@ public class UserResource {
         user.setPhotoId(mediaId);
 
         udb.postUser(new UserDAO(user));
-        Log.info("User created.");
         return Response.ok(user).build();
     }
 
@@ -104,8 +61,6 @@ public class UserResource {
 
             User user = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
-
-            Log.info("updateUser : " + id);
 
             List<UserDAO> results = UsersCache.getUserById(id);
             if(results.isEmpty()) {
@@ -127,7 +82,6 @@ public class UserResource {
             }
 
             udb.putUser(userDB);
-            Log.info("User updated.");
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;

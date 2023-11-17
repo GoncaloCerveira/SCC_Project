@@ -18,7 +18,7 @@ public class RentalDAO extends Rental implements ObjectDAO {
     }
 
     public RentalDAO(Rental r) {
-        super(r.getId(), r.getHouseId(), r.getUser(), r.getFromDate(), r.getToDate(), r.getLocation(), r.getCost(), r.getDiscount(), r.isFree());
+        super(r.getId(), r.getHouse(), r.getUser(), r.getFromDate(), r.getToDate(), r.getLocation(), r.getCost(), r.getDiscount(), r.isFree());
     }
 
     @Override

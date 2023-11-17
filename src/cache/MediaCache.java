@@ -6,20 +6,21 @@ import data.media.MediaDAO;
 import db.CosmosDBMediaLayer;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class MediaCache extends RedisCache {
     private static final CosmosDBMediaLayer mdb = CosmosDBMediaLayer.getInstance();
 
-    public static List<MediaDAO> getMediaByItemId(String itemId) {
-        List<MediaDAO> media = readFromCache("getMediaByItemId", itemId, new TypeReference<>() {});
+    public static List<MediaDAO> getItemMedia(String st, String len, String itemId) {
+        String key = st + len + itemId;
+        List<MediaDAO> media = readFromCache("getItemMedia", key, new TypeReference<>() {});
 
         if(media != null) {
             return media;
         }
-        CosmosPagedIterable<MediaDAO> mediaDB = mdb.getMediaByItemId(itemId);
+
+        CosmosPagedIterable<MediaDAO> mediaDB = mdb.getItemMedia(st, len, itemId);
         if(mediaDB.iterator().hasNext()) {
-            writeToCache("getMediaByItemId", itemId, mediaDB);
+            writeToCache("getItemMedia", key, mediaDB);
         }
 
         return mediaDB.stream().toList();

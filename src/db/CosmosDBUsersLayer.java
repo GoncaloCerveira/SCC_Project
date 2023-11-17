@@ -68,12 +68,17 @@ public class CosmosDBUsersLayer {
 
 	public CosmosPagedIterable<UserDAO> getUserById(String id) {
 		init();
-		return users.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(), UserDAO.class);
+		String query = "SELECT * FROM users WHERE users.id=\"" + id + "\"";
+		return users.queryItems(query, new CosmosQueryRequestOptions(), UserDAO.class);
 	}
 
-	public CosmosPagedIterable<UserDAO> getUsers() {
+	public CosmosPagedIterable<UserDAO> getUsers(String st, String len) {
 		init();
-		return users.queryItems("SELECT * FROM users ", new CosmosQueryRequestOptions(), UserDAO.class);
+		String query = "SELECT * FROM users";
+		if(st != null && len != null) {
+			query = query + " OFFSET " + st + " LIMIT " + len;
+		}
+		return users.queryItems(query, new CosmosQueryRequestOptions(), UserDAO.class);
 	}
 
 	public void close() {
