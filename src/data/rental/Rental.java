@@ -29,7 +29,7 @@ public class Rental {
     }
 
     public boolean validate() {
-        return this.fromDate != null && this.toDate != null && this.fromDate.compareTo(this.toDate) < 0 && this.cost != 0 && this.discount != 0;
+        return this.fromDate != null && this.toDate != null && this.fromDate.compareTo(this.toDate) < 0 && this.cost != 0;
     }
 
     public String getId() {

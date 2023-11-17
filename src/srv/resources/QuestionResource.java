@@ -3,6 +3,7 @@ package srv.resources;
 import cache.HousesCache;
 import cache.QuestionsCache;
 import com.azure.core.annotation.BodyParam;
+import data.authentication.Session;
 import data.house.HouseDAO;
 import data.question.Question;
 import data.question.QuestionDAO;
@@ -30,8 +31,8 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId, Question question) {
         try {
-            auth.checkCookieUser(session, null);
-            String userId = session.getName();
+            Session s = auth.checkCookieUser(session, null);
+            String userId = s.getName();
 
             if (!question.validateCreate()) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);

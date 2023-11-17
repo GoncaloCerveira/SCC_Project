@@ -1,6 +1,7 @@
 package srv.resources;
 
 import cache.RentalsCache;
+import data.authentication.Session;
 import data.rental.Rental;
 import data.rental.RentalDAO;
 
@@ -29,7 +30,7 @@ public class RentalResource {
     public Response create(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
                            @PathParam("rentalId") String rentalId) {
         try {
-            auth.checkCookieUser(session, null);
+            Session s = auth.checkCookieUser(session, null);
 
             List<RentalDAO> results = RentalsCache.getRentalById(rentalId);
             if(results.isEmpty()) {
@@ -37,7 +38,7 @@ public class RentalResource {
             }
 
             RentalDAO rentalDB = results.get(0);
-            rentalDB.setUser(session.getName());
+            rentalDB.setUser(s.getName());
             rentalDB.setFree(false);
 
             rdb.putRental(rentalDB);

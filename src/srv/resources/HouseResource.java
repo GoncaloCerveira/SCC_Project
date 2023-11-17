@@ -1,6 +1,7 @@
 package srv.resources;
 
 import cache.*;
+import data.authentication.Session;
 import data.rental.Rental;
 import data.rental.RentalDAO;
 import data.house.House;
@@ -39,8 +40,8 @@ public class HouseResource {
             House house = mpfd.getItem();
             byte[] contents = mpfd.getMedia();
 
-            String ownerId = house.getOwner();
-            auth.checkCookieUser(session, ownerId);
+            Session s = auth.checkCookieUser(session, null);
+            String ownerId = s.getName();
 
             if (!house.createValidate() || contents.length <= 2) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);

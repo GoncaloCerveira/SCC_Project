@@ -15,6 +15,7 @@ public class MainApplication extends Application
 
 	public MainApplication() {
 		AzureProperties.setKeys();
+		resources.add(AuthResource.class);
 		resources.add(ControlResource.class);
 		resources.add(HouseResource.class);
 		resources.add(QuestionResource.class);

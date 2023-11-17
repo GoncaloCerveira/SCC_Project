@@ -21,7 +21,7 @@ public class House {
     }
 
     public boolean createValidate() {
-        return this.name!=null && this.location!=null && this.owner !=null;
+        return this.name!=null && this.location!=null;
     }
 
     public String getId() {
