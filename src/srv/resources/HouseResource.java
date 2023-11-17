@@ -54,6 +54,7 @@ public class HouseResource {
 
             String houseId = UUID.randomUUID().toString();
             house.setId(houseId);
+            house.setOwner(ownerId);
 
             String mediaId = media.uploadImage(contents);
             mdb.postMedia(new MediaDAO(mediaId, house.getId()));

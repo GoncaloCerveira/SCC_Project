@@ -56,7 +56,7 @@ scenarios:
                 Content-Type: multipart/form-data
                 Accept: application/json
               formData:
-                house: '{"name":"{{ name }}","location":"{{ location }}"}'
+                house: '{"name":"{{ name }}","location":"{{ location }}", "description":"{{ description }}"}'
                 image: "{{ image }}"
               capture:
                 json: "$.id"

@@ -12,8 +12,8 @@ public class QuestionDAO extends Question implements ObjectDAO {
     public QuestionDAO() {
     }
 
-    public QuestionDAO(String id, String houseId, String userId, String ownerId, String text, String reply, boolean noAnswer) {
-        super(id, houseId, userId, ownerId, text, reply, noAnswer);
+    public QuestionDAO(String id, String house, String user, String owner, String text, String reply, boolean noAnswer) {
+        super(id, house, user, owner, text, reply, noAnswer);
     }
 
     public QuestionDAO(Question q) {

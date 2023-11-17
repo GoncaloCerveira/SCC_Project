@@ -98,7 +98,7 @@ public class CosmosDBRentalsLayer {
 
     public CosmosPagedIterable<RentalDAO> getUserRentals(String st, String len, String userId) {
         init();
-        String query = "SELECT * FROM rentals where rentals.userId=\"" + userId + "\"";
+        String query = "SELECT * FROM rentals where rentals.user=\"" + userId + "\"";
         if(st != null && len != null) {
             query = query + " OFFSET " + st + " LIMIT " + len;
         }

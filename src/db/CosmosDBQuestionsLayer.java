@@ -89,7 +89,7 @@ public class CosmosDBQuestionsLayer {
 
     public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String st, String len, String houseId) {
         init();
-        String query = "SELECT * FROM questions WHERE questions.house=\"" + houseId;
+        String query = "SELECT * FROM questions WHERE questions.house=\"" + houseId + "\"";
         if(st != null && len != null) {
             query = query + " OFFSET " + st + " LIMIT " + len;
         }
