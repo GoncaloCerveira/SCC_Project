@@ -206,6 +206,7 @@ public class HouseResource {
         } catch(Exception e) {
             throw new InternalServerErrorException(e);
         }
+
     }
 
     @GET
@@ -226,7 +227,6 @@ public class HouseResource {
         } else {
             houses = HousesCache.getHouses(st, len);
         }
-
         return Response.ok(houses).build();
     }
 
