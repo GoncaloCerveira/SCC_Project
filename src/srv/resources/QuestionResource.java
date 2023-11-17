@@ -42,11 +42,18 @@ public class QuestionResource {
             if (!empty) {
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
+            List<HouseDAO> results = HousesCache.getHouseById(houseId);
+            if(results.isEmpty()) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
 
-            question.setUser(userId);
-            question.setReply(null);
+            HouseDAO house = results.get(0);
 
-            qdb.postQuestion(new QuestionDAO(question));
+            String id = UUID.randomUUID().toString();
+            String ownerId = house.getOwner();
+            String text = question.getText();
+
+            qdb.postQuestion(new QuestionDAO(id, houseId, userId, ownerId, text, null, true));
             return Response.ok().build();
         } catch (WebApplicationException e) {
             throw e;
@@ -61,7 +68,7 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response reply(@PathParam("houseId") String houseId, @PathParam("questionId") String questionId,
-                                  @BodyParam("reply") String reply) {
+                          @BodyParam("reply") String reply) {
         List<HouseDAO> hResults = HousesCache.getHouseById(houseId);
         if (hResults.isEmpty()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -85,7 +92,7 @@ public class QuestionResource {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@PathParam("houseId") String houseId, @QueryParam("noanswer") String noAnswer,
+    public Response list(@PathParam("houseId") String houseId, @QueryParam("noanswer") Boolean noAnswer,
                          @QueryParam("st") String st , @QueryParam("len") String len) {
         List<HouseDAO> results = HousesCache.getHouseById(houseId);
         if (results.isEmpty()) {
@@ -94,7 +101,7 @@ public class QuestionResource {
 
         List<QuestionDAO> questions;
         if(noAnswer != null) {
-            questions = QuestionsCache.getHouseQuestionsByStatus(st, len, houseId);
+            questions = QuestionsCache.getHouseQuestionsByStatus(st, len, houseId, noAnswer);
         } else {
             questions = QuestionsCache.getHouseQuestions(st, len, houseId);
         }

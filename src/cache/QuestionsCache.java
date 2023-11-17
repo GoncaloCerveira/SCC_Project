@@ -74,15 +74,15 @@ public class QuestionsCache extends RedisCache {
         return questionsDB.stream().toList();
     }
 
-    public static List<QuestionDAO> getHouseQuestionsByStatus(String st, String len, String noAnswer) {
-        String key = st + len + noAnswer;
+    public static List<QuestionDAO> getHouseQuestionsByStatus(String st, String len, String houseId, boolean noAnswer) {
+        String key = st + len + houseId + noAnswer;
         List<QuestionDAO> questions = readFromCache("getHouseQuestionsByStatus", key, new TypeReference<>() {});
 
         if(questions != null) {
             return questions;
         }
 
-        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestionsByStatus(st, len, noAnswer);
+        CosmosPagedIterable<QuestionDAO> questionsDB = qdb.getHouseQuestionsByStatus(st, len, houseId, noAnswer);
         if(questionsDB.iterator().hasNext()) {
             writeToCache("getHouseQuestionsByStatus", key, questionsDB);
         }

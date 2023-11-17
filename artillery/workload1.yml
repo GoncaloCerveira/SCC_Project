@@ -200,9 +200,6 @@ scenarios:
               Accept: application/json
               Content-Type: application/json
             json:
-              house: "{{ houseId }}"
-              owner: "{{ owner }}"
-              user: "{{ user }}"
               text: "{{ text }}"
             ifTrue: "houseId and afterNextAction == 2"
         ################################# Reserve house

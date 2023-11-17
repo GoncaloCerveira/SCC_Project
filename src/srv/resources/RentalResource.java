@@ -106,7 +106,7 @@ public class RentalResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@CookieParam("scc:session") Cookie session, @PathParam("houseId") String houseId,
-                         @QueryParam("st") String st , @QueryParam("len") String len, @QueryParam("free") boolean free) {
+                         @QueryParam("st") String st , @QueryParam("len") String len, @QueryParam("free") Boolean free) {
         try {
             auth.checkCookieUser(session, null);
 

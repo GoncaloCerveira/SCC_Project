@@ -26,7 +26,7 @@ public class Question {
     }
 
     public boolean validateCreate() {
-        return this.id != null && this.house != null && this.owner != null && this.text != null;
+        return this.text != null;
     }
 
     public String getId() {

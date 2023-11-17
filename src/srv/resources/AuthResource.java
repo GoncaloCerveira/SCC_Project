@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,7 +25,12 @@ public class AuthResource {
         boolean pwdOk = false;
         String id = login.getUser();
 
-        UserDAO user = UsersCache.getUserById(id).get(0);
+        List<UserDAO> results = UsersCache.getUserById(id);
+        if(results.isEmpty()) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        UserDAO user = results.get(0);
         if (Objects.equals(login.getPwd(), user.getPwd())){
             pwdOk = true;
         }
@@ -42,7 +48,7 @@ public class AuthResource {
             AuthCache.putSession(new Session(uid,id));
             return Response.ok().cookie(cookie).build();
         } else {
-            throw new NotAuthorizedException("Incorrect login");
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
     }

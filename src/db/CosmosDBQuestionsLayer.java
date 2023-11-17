@@ -89,16 +89,16 @@ public class CosmosDBQuestionsLayer {
 
     public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String st, String len, String houseId) {
         init();
-        String query = "SELECT * FROM questions where questions.house=\"" + houseId;
+        String query = "SELECT * FROM questions WHERE questions.house=\"" + houseId;
         if(st != null && len != null) {
             query = query + " OFFSET " + st + " LIMIT " + len;
         }
         return questions.queryItems(query, new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
-    public CosmosPagedIterable<QuestionDAO> getHouseQuestionsByStatus(String st, String len, String noAnswer) {
+    public CosmosPagedIterable<QuestionDAO> getHouseQuestionsByStatus(String st, String len, String houseId, boolean noAnswer) {
         init();
-        String query = "SELECT * FROM questions where questions.noAnswer=\"" + noAnswer + "\"";
+        String query = "SELECT * FROM questions WHERE questions.houseId=\"" + houseId + "\" questions.noAnswer=\"" + noAnswer + "\"";
         if(st != null && len != null) {
             query = query + " OFFSET " + st + " LIMIT " + len;
         }
