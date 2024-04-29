@@ -1,6 +1,6 @@
 # SCC_Project
 
-The project was made for the porpuses of Cloud Computing Systems
+The project was created for the purpose of Cloud Computing Systems course.
 
 The project consists in the design and implementation of the backend for a house rental
 company and the companion testing scripts.
